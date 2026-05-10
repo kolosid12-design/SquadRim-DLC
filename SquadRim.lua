@@ -1,4 +1,4 @@
--- SWILL | SquadRim DLC PRO | v12.2 | С ИСПРАВЛЕННОЙ АВТОРИЗАЦИЕЙ
+-- SWILL | SquadRim DLC PRO | v13.0 | ПОЛНОСТЬЮ РАБОЧИЙ
 -- Telegram: t.me/squadrim1
 -- Insert = Меню | F7 = FreeCam | End = UNLOAD
 
@@ -14,15 +14,38 @@ local Workspace = game:GetService("Workspace")
 local HttpService = game:GetService("HttpService")
 local TweenService = game:GetService("TweenService")
 
--- ========== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ДЛЯ КОПИРОВАНИЯ ==========
+-- ========== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ==========
 local function CopyToClipboard(text)
     if setclipboard then
         setclipboard(text)
     elseif toclipboard then
         toclipboard(text)
     else
-        print("Ваш эксплоит не поддерживает копирование в буфер: " .. text)
+        print("Копирование не поддерживается")
     end
+end
+
+local function ShowNotification(text, isError)
+    local notification = Instance.new("TextLabel")
+    notification.Size = UDim2.new(0, 300, 0, 35)
+    notification.Position = UDim2.new(0.5, -150, 0.2, 0)
+    notification.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
+    notification.BackgroundTransparency = 0.2
+    notification.BorderSizePixel = 0
+    notification.Text = text
+    notification.TextColor3 = isError and Color3.fromRGB(255, 80, 80) or Color3.fromRGB(80, 255, 80)
+    notification.TextSize = 14
+    notification.Font = Enum.Font.SourceSansBold
+    notification.ZIndex = 1000
+    notification.Parent = CoreGui
+    
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 8)
+    corner.Parent = notification
+    
+    task.delay(3, function()
+        notification:Destroy()
+    end)
 end
 
 -- ========== ПЕРЕМЕННЫЕ СОСТОЯНИЯ ==========
@@ -382,29 +405,6 @@ local function SetupBHop()
 end
 
 -- ========== CFG СИСТЕМА ==========
-local function ShowNotification(text, isError)
-    local notification = Instance.new("TextLabel")
-    notification.Size = UDim2.new(0, 300, 0, 35)
-    notification.Position = UDim2.new(0.5, -150, 0.2, 0)
-    notification.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
-    notification.BackgroundTransparency = 0.2
-    notification.BorderSizePixel = 0
-    notification.Text = text
-    notification.TextColor3 = isError and Color3.fromRGB(255, 80, 80) or Color3.fromRGB(80, 255, 80)
-    notification.TextSize = 14
-    notification.Font = Enum.Font.GothamBold
-    notification.ZIndex = 1000
-    notification.Parent = CoreGui
-    
-    local corner = Instance.new("UICorner")
-    corner.CornerRadius = UDim.new(0, 8)
-    corner.Parent = notification
-    
-    task.delay(3, function()
-        notification:Destroy()
-    end)
-end
-
 local function SaveConfig()
     local cfg = {
         rage = state.rage, legit = state.legit, triggerbot = state.triggerbot,
@@ -430,20 +430,19 @@ end
 
 -- ========== HUD ==========
 local HUD = Instance.new("TextLabel")
-HUD.Size = UDim2.new(0, 500, 0, 25)
-HUD.Position = UDim2.new(0.5, -250, 0.01, 0)
+HUD.Size = UDim2.new(0, 550, 0, 25)
+HUD.Position = UDim2.new(0.5, -275, 0.01, 0)
 HUD.BackgroundTransparency = 0.6
 HUD.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 HUD.TextColor3 = Color3.fromRGB(0, 255, 255)
 HUD.TextScaled = true
-HUD.Font = Enum.Font.GothamBold
+HUD.Font = Enum.Font.SourceSansBold
 HUD.Parent = CoreGui
 
 local function UpdateHUD()
     local fps = math.floor(1 / RunService.RenderStepped:Wait())
     local freecamStatus = isFreeCam and " [FREECAM]" or ""
-    local authStatus = state.authorized and " 🔓" or " 🔒"
-    HUD.Text = string.format("| t.me/squadrim1 | FREE | v%s | %d FPS |%s%s", state.version, fps, freecamStatus, authStatus)
+    HUD.Text = string.format("| t.me/squadrim1 | FREE | v%s | %d FPS |%s", state.version, fps, freecamStatus)
 end
 
 -- ========== UNLOAD ==========
@@ -542,7 +541,7 @@ local function CreateBindsDisplay()
     bindsDisplayFrame.BorderColor3 = Color3.fromRGB(0, 200, 255)
     bindsDisplayFrame.TextColor3 = Color3.fromRGB(255, 255, 255)
     bindsDisplayFrame.TextSize = 12
-    bindsDisplayFrame.Font = Enum.Font.Gotham
+    bindsDisplayFrame.Font = Enum.Font.SourceSans
     bindsDisplayFrame.TextXAlignment = Enum.TextXAlignment.Left
     bindsDisplayFrame.TextYAlignment = Enum.TextYAlignment.Top
     bindsDisplayFrame.TextWrapped = true
@@ -645,10 +644,10 @@ local function CreateGUI()
     title.Size = UDim2.new(1, -60, 0, 40)
     title.Position = UDim2.new(0, 10, 0, 0)
     title.BackgroundTransparency = 1
-    title.Text = "SQUADRIM DLC PRO v12.2"
+    title.Text = "SQUADRIM DLC PRO v13.0"
     title.TextColor3 = Color3.fromRGB(0, 210, 255)
     title.TextSize = 18
-    title.Font = Enum.Font.GothamBold
+    title.Font = Enum.Font.SourceSansBold
     title.TextXAlignment = Enum.TextXAlignment.Left
     title.Parent = titleBar
     
@@ -659,6 +658,7 @@ local function CreateGUI()
     themeBtn.Text = "🌙"
     themeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
     themeBtn.TextSize = 16
+    themeBtn.Font = Enum.Font.SourceSansBold
     themeBtn.Parent = titleBar
     themeBtn.MouseButton1Click:Connect(function()
         state.theme = state.theme == "dark" and "light" or "dark"
@@ -686,7 +686,7 @@ local function CreateGUI()
         btn.Text = tabName
         btn.TextColor3 = Color3.fromRGB(255, 255, 255)
         btn.TextSize = 13
-        btn.Font = Enum.Font.GothamBold
+        btn.Font = Enum.Font.SourceSansBold
         btn.BorderSizePixel = 0
         btn.Parent = tabBar
         tabButtons[tabName] = btn
@@ -733,7 +733,7 @@ local function CreateGUI()
         label.Text = text
         label.TextColor3 = Color3.fromRGB(220, 220, 220)
         label.TextSize = 13
-        label.Font = Enum.Font.Gotham
+        label.Font = Enum.Font.SourceSans
         label.TextXAlignment = Enum.TextXAlignment.Left
         label.Parent = card
         
@@ -744,7 +744,7 @@ local function CreateGUI()
         btn.Text = getter() and "ON" or "OFF"
         btn.TextColor3 = Color3.fromRGB(255, 255, 255)
         btn.TextSize = 12
-        btn.Font = Enum.Font.GothamBold
+        btn.Font = Enum.Font.SourceSansBold
         btn.Parent = card
         
         if bindName then
@@ -755,6 +755,7 @@ local function CreateGUI()
             bindBtn.Text = "🔗"
             bindBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
             bindBtn.TextSize = 14
+            bindBtn.Font = Enum.Font.SourceSansBold
             bindBtn.Parent = card
             
             binds[bindName] = {
@@ -792,7 +793,7 @@ local function CreateGUI()
         label.Text = text .. ": " .. getter()
         label.TextColor3 = Color3.fromRGB(200, 200, 200)
         label.TextSize = 12
-        label.Font = Enum.Font.Gotham
+        label.Font = Enum.Font.SourceSans
         label.TextXAlignment = Enum.TextXAlignment.Left
         label.Parent = card
         
@@ -814,7 +815,7 @@ local function CreateGUI()
         valueLabel.Text = tostring(getter())
         valueLabel.TextColor3 = Color3.fromRGB(0, 210, 255)
         valueLabel.TextSize = 12
-        valueLabel.Font = Enum.Font.GothamBold
+        valueLabel.Font = Enum.Font.SourceSansBold
         valueLabel.Parent = card
         
         local dragging = false
@@ -852,7 +853,7 @@ local function CreateGUI()
         label.Text = text
         label.TextColor3 = Color3.fromRGB(220, 220, 220)
         label.TextSize = 12
-        label.Font = Enum.Font.Gotham
+        label.Font = Enum.Font.SourceSans
         label.TextXAlignment = Enum.TextXAlignment.Left
         label.Parent = card
         
@@ -863,6 +864,7 @@ local function CreateGUI()
         btn.Text = getter()
         btn.TextColor3 = Color3.fromRGB(255, 255, 255)
         btn.TextSize = 12
+        btn.Font = Enum.Font.SourceSansBold
         btn.Parent = card
         
         local dropdownOpen = false
@@ -888,6 +890,7 @@ local function CreateGUI()
                 optBtn.Text = opt
                 optBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
                 optBtn.TextSize = 11
+                optBtn.Font = Enum.Font.SourceSans
                 optBtn.Parent = dropdownFrame
                 
                 optBtn.MouseButton1Click:Connect(function()
@@ -934,7 +937,7 @@ local function CreateGUI()
     saveBtn.Text = "💾 SAVE CONFIG"
     saveBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
     saveBtn.TextSize = 12
-    saveBtn.Font = Enum.Font.GothamBold
+    saveBtn.Font = Enum.Font.SourceSansBold
     saveBtn.Parent = containers["MISC"]
     saveBtn.MouseButton1Click:Connect(SaveConfig)
     
@@ -945,7 +948,7 @@ local function CreateGUI()
     loadBtn.Text = "📂 LOAD CONFIG"
     loadBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
     loadBtn.TextSize = 12
-    loadBtn.Font = Enum.Font.GothamBold
+    loadBtn.Font = Enum.Font.SourceSansBold
     loadBtn.Parent = containers["MISC"]
     loadBtn.MouseButton1Click:Connect(LoadConfig)
     
@@ -956,138 +959,152 @@ local function CreateGUI()
     unloadBtn.Text = "⚠️ UNLOAD CHEAT (END) ⚠️"
     unloadBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
     unloadBtn.TextSize = 13
-    unloadBtn.Font = Enum.Font.GothamBold
+    unloadBtn.Font = Enum.Font.SourceSansBold
     unloadBtn.Parent = containers["MISC"]
     unloadBtn.MouseButton1Click:Connect(UnloadCheat)
 end
 
 -- ========== АВТОРИЗАЦИЯ (ИСПРАВЛЕННАЯ) ==========
-local function CreateLoginWindow()
+local function ShowAuth()
     local authGui = Instance.new("ScreenGui")
     authGui.Name = "SquadRim_Auth"
     authGui.Parent = CoreGui
     authGui.ResetOnSpawn = false
 
-    local loginFrame = Instance.new("Frame")
-    loginFrame.Size = UDim2.new(0, 420, 0, 280)
-    loginFrame.Position = UDim2.new(0.5, -210, 0.5, -140)
-    loginFrame.BackgroundColor3 = Color3.fromRGB(18, 18, 28)
-    loginFrame.BorderSizePixel = 0
-    loginFrame.ZIndex = 999
-    loginFrame.Active = true
-    loginFrame.Draggable = true
-    loginFrame.Parent = authGui
-    
-    local loginCorner = Instance.new("UICorner")
-    loginCorner.CornerRadius = UDim.new(0, 15)
-    loginCorner.Parent = loginFrame
-    
-    -- Заголовок
-    local titleFrame = Instance.new("Frame")
-    titleFrame.Size = UDim2.new(1, 0, 0, 50)
-    titleFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
-    titleFrame.BorderSizePixel = 0
-    titleFrame.Parent = loginFrame
-    
-    local titleCorner = Instance.new("UICorner")
-    titleCorner.CornerRadius = UDim.new(0, 15)
-    titleCorner.Parent = titleFrame
+    local mainFrame = Instance.new("Frame")
+    mainFrame.Size = UDim2.new(0, 400, 0, 250)
+    mainFrame.Position = UDim2.new(0.5, -200, 0.5, -125)
+    mainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+    mainFrame.BackgroundTransparency = 0
+    mainFrame.BorderSizePixel = 2
+    mainFrame.BorderColor3 = Color3.fromRGB(0, 200, 255)
+    mainFrame.Active = true
+    mainFrame.Draggable = true
+    mainFrame.Parent = authGui
+
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 12)
+    corner.Parent = mainFrame
 
     local title = Instance.new("TextLabel")
-    title.Size = UDim2.new(1, 0, 1, 0)
-    title.BackgroundTransparency = 1
+    title.Size = UDim2.new(1, 0, 0, 45)
+    title.BackgroundColor3 = Color3.fromRGB(35, 35, 50)
     title.Text = "SQUADRIM DLC PRO"
     title.TextColor3 = Color3.fromRGB(0, 210, 255)
-    title.TextSize = 20
-    title.Font = Enum.Font.GothamBold
-    title.Parent = titleFrame
-    
-    -- Поле ввода
-    local loginTextBox = Instance.new("TextBox")
-    loginTextBox.Size = UDim2.new(0.8, 0, 0, 45)
-    loginTextBox.Position = UDim2.new(0.1, 0, 0.4, 0)
-    loginTextBox.BackgroundColor3 = Color3.fromRGB(40, 40, 55)
-    loginTextBox.Text = ""
-    loginTextBox.PlaceholderText = "Введите ключ"
-    loginTextBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-    loginTextBox.TextSize = 16
-    loginTextBox.Font = Enum.Font.Gotham
-    loginTextBox.Parent = loginFrame
-    
+    title.TextSize = 22
+    title.Font = Enum.Font.SourceSansBold
+    title.Parent = mainFrame
+    title.TextScaled = true
+
+    local subtitle = Instance.new("TextLabel")
+    subtitle.Size = UDim2.new(1, 0, 0, 25)
+    subtitle.Position = UDim2.new(0, 0, 0, 50)
+    subtitle.BackgroundTransparency = 1
+    subtitle.Text = "Введите ключ для активации"
+    subtitle.TextColor3 = Color3.fromRGB(200, 200, 200)
+    subtitle.TextSize = 14
+    subtitle.Font = Enum.Font.SourceSans
+    subtitle.Parent = mainFrame
+
+    local textBox = Instance.new("TextBox")
+    textBox.Size = UDim2.new(0.8, 0, 0, 40)
+    textBox.Position = UDim2.new(0.1, 0, 0, 85)
+    textBox.BackgroundColor3 = Color3.fromRGB(40, 40, 55)
+    textBox.Text = ""
+    textBox.PlaceholderText = "Введите ключ"
+    textBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+    textBox.TextSize = 16
+    textBox.Font = Enum.Font.SourceSans
+    textBox.Parent = mainFrame
+
     local textBoxCorner = Instance.new("UICorner")
-    textBoxCorner.CornerRadius = UDim.new(0, 10)
-    textBoxCorner.Parent = loginTextBox
-    
-    -- Кнопка "ВОЙТИ"
-    local submitBtn = Instance.new("TextButton")
-    submitBtn.Size = UDim2.new(0.35, 0, 0, 40)
-    submitBtn.Position = UDim2.new(0.1, 0, 0.65, 0)
-    submitBtn.BackgroundColor3 = Color3.fromRGB(0, 150, 200)
-    submitBtn.Text = "ВОЙТИ"
-    submitBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    submitBtn.Font = Enum.Font.GothamBold
-    submitBtn.Parent = loginFrame
-    Instance.new("UICorner", submitBtn).CornerRadius = UDim.new(0, 10)
-    
-    -- Кнопка "КОПИРОВАТЬ ТГ"
+    textBoxCorner.CornerRadius = UDim.new(0, 8)
+    textBoxCorner.Parent = textBox
+
+    local loginBtn = Instance.new("TextButton")
+    loginBtn.Size = UDim2.new(0.35, 0, 0, 38)
+    loginBtn.Position = UDim2.new(0.1, 0, 0, 140)
+    loginBtn.BackgroundColor3 = Color3.fromRGB(0, 150, 200)
+    loginBtn.Text = "ВОЙТИ"
+    loginBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    loginBtn.TextSize = 16
+    loginBtn.Font = Enum.Font.SourceSansBold
+    loginBtn.Parent = mainFrame
+
+    local loginBtnCorner = Instance.new("UICorner")
+    loginBtnCorner.CornerRadius = UDim.new(0, 8)
+    loginBtnCorner.Parent = loginBtn
+
     local getKeyBtn = Instance.new("TextButton")
-    getKeyBtn.Size = UDim2.new(0.35, 0, 0, 40)
-    getKeyBtn.Position = UDim2.new(0.55, 0, 0.65, 0)
+    getKeyBtn.Size = UDim2.new(0.35, 0, 0, 38)
+    getKeyBtn.Position = UDim2.new(0.55, 0, 0, 140)
     getKeyBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 80)
-    getKeyBtn.Text = "TG ССЫЛКА"
+    getKeyBtn.Text = "ПОЛУЧИТЬ"
     getKeyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    getKeyBtn.Font = Enum.Font.GothamBold
-    getKeyBtn.Parent = loginFrame
-    Instance.new("UICorner", getKeyBtn).CornerRadius = UDim.new(0, 10)
+    getKeyBtn.TextSize = 14
+    getKeyBtn.Font = Enum.Font.SourceSansBold
+    getKeyBtn.Parent = mainFrame
 
-    -- Нижний текст
-    local info = Instance.new("TextLabel")
-    info.Size = UDim2.new(1, 0, 0, 20)
-    info.Position = UDim2.new(0, 0, 0.85, 0)
-    info.BackgroundTransparency = 1
-    info.Text = "Бесплатный ключ: SquadRim2024"
-    info.TextColor3 = Color3.fromRGB(150, 150, 150)
-    info.TextSize = 12
-    info.Font = Enum.Font.Gotham
-    info.Parent = loginFrame
+    local getKeyBtnCorner = Instance.new("UICorner")
+    getKeyBtnCorner.CornerRadius = UDim.new(0, 8)
+    getKeyBtnCorner.Parent = getKeyBtn
 
-    -- ЛОГИКА
+    local infoText = Instance.new("TextLabel")
+    infoText.Size = UDim2.new(1, 0, 0, 25)
+    infoText.Position = UDim2.new(0, 0, 0, 190)
+    infoText.BackgroundTransparency = 1
+    infoText.Text = "Бесплатный ключ: SquadRim2024"
+    infoText.TextColor3 = Color3.fromRGB(150, 150, 180)
+    infoText.TextSize = 12
+    infoText.Font = Enum.Font.SourceSans
+    infoText.Parent = mainFrame
+
+    local tgText = Instance.new("TextLabel")
+    tgText.Size = UDim2.new(1, 0, 0, 20)
+    tgText.Position = UDim2.new(0, 0, 0, 215)
+    tgText.BackgroundTransparency = 1
+    tgText.Text = "Telegram: t.me/squadrim1"
+    tgText.TextColor3 = Color3.fromRGB(0, 200, 255)
+    tgText.TextSize = 12
+    tgText.Font = Enum.Font.SourceSans
+    tgText.Parent = mainFrame
+
     local validKeys = {"SquadRim2024", "freekey", "squadrim", "admin123", "123456"}
-    
+
     local function CheckKey(key)
         for _, v in ipairs(validKeys) do
             if key == v then return true end
         end
         return false
     end
-    
-    getKeyBtn.MouseButton1Click:Connect(function()
-        CopyToClipboard("t.me/squadrim1")
-        ShowNotification("✅ Ссылка скопирована!", false)
-    end)
 
     local function AttemptLogin()
-        local enteredKey = loginTextBox.Text
-        if CheckKey(enteredKey) then
+        local key = textBox.Text
+        if CheckKey(key) then
             state.authorized = true
             authGui:Destroy()
-            ShowNotification("✅ Доступ разрешен!", false)
+            ShowNotification("✅ Авторизация успешна!", false)
             CreateGUI()
             StartCheatFunctions()
         else
-            loginTextBox.Text = ""
-            loginTextBox.PlaceholderText = "НЕВЕРНЫЙ КЛЮЧ!"
-            loginTextBox.BackgroundColor3 = Color3.fromRGB(80, 40, 40)
-            ShowNotification("❌ Ошибка авторизации!", true)
-            task.wait(1)
-            loginTextBox.PlaceholderText = "Введите ключ"
-            loginTextBox.BackgroundColor3 = Color3.fromRGB(40, 40, 55)
+            textBox.Text = ""
+            textBox.PlaceholderText = "НЕВЕРНЫЙ КЛЮЧ!"
+            textBox.BackgroundColor3 = Color3.fromRGB(80, 40, 40)
+            ShowNotification("❌ Неверный ключ!", true)
+            task.wait(1.5)
+            textBox.PlaceholderText = "Введите ключ"
+            textBox.BackgroundColor3 = Color3.fromRGB(40, 40, 55)
         end
     end
 
-    submitBtn.MouseButton1Click:Connect(AttemptLogin)
-    loginTextBox.FocusLost:Connect(function(enter)
-        if enter then AttemptLogin() end
+    loginBtn.MouseButton1Click:Connect(AttemptLogin)
+    textBox.FocusLost:Connect(function(enterPressed)
+        if enterPressed then AttemptLogin() end
+    end)
+
+    getKeyBtn.MouseButton1Click:Connect(function()
+        CopyToClipboard("t.me/squadrim1")
+        ShowNotification("✅ Ссылка скопирована!", false)
     end)
 end
 
@@ -1123,9 +1140,9 @@ local function StartCheatFunctions()
         end
     end)
     
-    print("SQUADRIM DLC PRO v12.2 | FULLY LOADED")
-    print("Insert = Menu | F7 = FreeCam | End = UNLOAD")
+    print("=== SQUADRIM DLC PRO v13.0 ЗАПУЩЕН ===")
+    print("Insert = Меню | F7 = FreeCam | End = UNLOAD")
 end
 
 -- ========== ЗАПУСК ==========
-CreateLoginWindow()
+ShowAuth()
