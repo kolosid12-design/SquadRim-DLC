@@ -1,747 +1,772 @@
 --[[
-    SQUADRIM DLC LOADER | ADVANCED MENU
+    SQUADRIM DLC | ImGUI STYLE CHEAT
+    Telegram: t.me/squadrim1
     Password: SquadRim2024
+    Insert = Menu | End = Unload
 ]]
+
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local Mouse = LocalPlayer:GetMouse()
+local Camera = workspace.CurrentCamera
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local CoreGui = game:GetService("CoreGui")
+local VirtualInputManager = game:GetService("VirtualInputManager")
+local Workspace = game:GetService("Workspace")
+local HttpService = game:GetService("HttpService")
 
 -- ========== АВТОРИЗАЦИЯ ==========
 local function ShowAuth()
     local AuthGui = Instance.new("ScreenGui")
     AuthGui.Name = "SquadRim_Auth"
-    AuthGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-    AuthGui.Parent = game:GetService("CoreGui")
+    AuthGui.Parent = CoreGui
     AuthGui.ResetOnSpawn = false
 
     local Frame = Instance.new("Frame")
-    Frame.Name = "Frame"
-    Frame.BackgroundColor3 = Color3.fromRGB(17, 18, 20)
-    Frame.BorderColor3 = Color3.fromRGB(0, 0, 0)
-    Frame.BorderSizePixel = 0
-    Frame.Position = UDim2.new(0.5, -200, 0.5, -120)
-    Frame.Size = UDim2.new(0, 400, 0, 240)
+    Frame.Size = UDim2.new(0, 350, 0, 220)
+    Frame.Position = UDim2.new(0.5, -175, 0.5, -110)
+    Frame.BackgroundColor3 = Color3.fromRGB(15, 15, 22)
+    Frame.BorderSizePixel = 2
+    Frame.BorderColor3 = Color3.fromRGB(200, 50, 50)
+    Frame.Active = true
+    Frame.Draggable = true
     Frame.Parent = AuthGui
-
-    local UICorner = Instance.new("UICorner")
-    UICorner.CornerRadius = UDim.new(0, 15)
-    UICorner.Parent = Frame
+    Instance.new("UICorner", Frame).CornerRadius = UDim.new(0, 10)
 
     local Title = Instance.new("TextLabel")
-    Title.Name = "Title"
-    Title.BackgroundColor3 = Color3.fromRGB(25, 28, 35)
-    Title.BorderColor3 = Color3.fromRGB(0, 0, 0)
-    Title.BorderSizePixel = 0
-    Title.Size = UDim2.new(1, 0, 0, 50)
-    Title.FontFace = Font.new("rbxasset://fonts/families/Nunito.json")
+    Title.Size = UDim2.new(1, 0, 0, 45)
+    Title.BackgroundColor3 = Color3.fromRGB(25, 25, 38)
     Title.Text = "SQUADRIM DLC"
-    Title.TextColor3 = Color3.fromRGB(220, 50, 50)
-    Title.TextSize = 28
-    Title.TextWrapped = true
+    Title.TextColor3 = Color3.fromRGB(200, 50, 50)
+    Title.TextSize = 22
+    Title.Font = Enum.Font.SourceSansBold
     Title.Parent = Frame
+    Title.TextScaled = true
 
-    local SubTitle = Instance.new("TextLabel")
-    SubTitle.Name = "SubTitle"
-    SubTitle.BackgroundColor3 = Color3.fromRGB(17, 18, 20)
-    SubTitle.BackgroundTransparency = 1
-    SubTitle.BorderColor3 = Color3.fromRGB(0, 0, 0)
-    SubTitle.BorderSizePixel = 0
-    SubTitle.Position = UDim2.new(0, 0, 0, 55)
-    SubTitle.Size = UDim2.new(1, 0, 0, 25)
-    SubTitle.FontFace = Font.new("rbxasset://fonts/families/Nunito.json")
-    SubTitle.Text = "Введите пароль для доступа"
-    SubTitle.TextColor3 = Color3.fromRGB(180, 180, 200)
-    SubTitle.TextSize = 14
-    SubTitle.Parent = Frame
+    local Sub = Instance.new("TextLabel")
+    Sub.Size = UDim2.new(1, 0, 0, 25)
+    Sub.Position = UDim2.new(0, 0, 0, 50)
+    Sub.BackgroundTransparency = 1
+    Sub.Text = "Введите пароль для доступа"
+    Sub.TextColor3 = Color3.fromRGB(180, 180, 200)
+    Sub.TextSize = 13
+    Sub.Font = Enum.Font.SourceSans
+    Sub.Parent = Frame
 
-    local PasswordBox = Instance.new("TextBox")
-    PasswordBox.Name = "PasswordBox"
-    PasswordBox.BackgroundColor3 = Color3.fromRGB(30, 32, 40)
-    PasswordBox.BorderColor3 = Color3.fromRGB(0, 0, 0)
-    PasswordBox.BorderSizePixel = 0
-    PasswordBox.Position = UDim2.new(0.1, 0, 0.38, 0)
-    PasswordBox.Size = UDim2.new(0.8, 0, 0, 40)
-    PasswordBox.FontFace = Font.new("rbxasset://fonts/families/Nunito.json")
-    PasswordBox.PlaceholderText = "Пароль..."
-    PasswordBox.Text = ""
-    PasswordBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-    PasswordBox.TextSize = 16
-    PasswordBox.Parent = Frame
-    
-    local PasswordCorner = Instance.new("UICorner")
-    PasswordCorner.CornerRadius = UDim.new(0, 8)
-    PasswordCorner.Parent = PasswordBox
+    local Input = Instance.new("TextBox")
+    Input.Size = UDim2.new(0.8, 0, 0, 38)
+    Input.Position = UDim2.new(0.1, 0, 0, 85)
+    Input.BackgroundColor3 = Color3.fromRGB(30, 30, 42)
+    Input.BorderSizePixel = 1
+    Input.BorderColor3 = Color3.fromRGB(55, 60, 75)
+    Input.PlaceholderText = "Пароль..."
+    Input.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Input.TextSize = 14
+    Input.Font = Enum.Font.SourceSans
+    Input.Parent = Frame
+    Instance.new("UICorner", Input).CornerRadius = UDim.new(0, 5)
 
-    local LoginBtn = Instance.new("TextButton")
-    LoginBtn.Name = "LoginBtn"
-    LoginBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
-    LoginBtn.BorderColor3 = Color3.fromRGB(0, 0, 0)
-    LoginBtn.BorderSizePixel = 0
-    LoginBtn.Position = UDim2.new(0.1, 0, 0.62, 0)
-    LoginBtn.Size = UDim2.new(0.35, 0, 0, 40)
-    LoginBtn.FontFace = Font.new("rbxasset://fonts/families/Nunito.json")
-    LoginBtn.Text = "ВОЙТИ"
-    LoginBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    LoginBtn.TextSize = 16
-    LoginBtn.Parent = Frame
-    
-    local LoginCorner = Instance.new("UICorner")
-    LoginCorner.CornerRadius = UDim.new(0, 8)
-    LoginCorner.Parent = LoginBtn
+    local Btn = Instance.new("TextButton")
+    Btn.Size = UDim2.new(0.35, 0, 0, 38)
+    Btn.Position = UDim2.new(0.1, 0, 0, 140)
+    Btn.Text = "ВОЙТИ"
+    Btn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+    Btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Btn.TextSize = 14
+    Btn.Font = Enum.Font.SourceSansBold
+    Btn.Parent = Frame
+    Instance.new("UICorner", Btn).CornerRadius = UDim.new(0, 5)
 
-    local GetKeyBtn = Instance.new("TextButton")
-    GetKeyBtn.Name = "GetKeyBtn"
-    GetKeyBtn.BackgroundColor3 = Color3.fromRGB(40, 42, 52)
-    GetKeyBtn.BorderColor3 = Color3.fromRGB(0, 0, 0)
-    GetKeyBtn.BorderSizePixel = 0
-    GetKeyBtn.Position = UDim2.new(0.55, 0, 0.62, 0)
-    GetKeyBtn.Size = UDim2.new(0.35, 0, 0, 40)
-    GetKeyBtn.FontFace = Font.new("rbxasset://fonts/families/Nunito.json")
-    GetKeyBtn.Text = "TG ССЫЛКА"
-    GetKeyBtn.TextColor3 = Color3.fromRGB(200, 50, 50)
-    GetKeyBtn.TextSize = 14
-    GetKeyBtn.Parent = Frame
-    
-    local GetKeyCorner = Instance.new("UICorner")
-    GetKeyCorner.CornerRadius = UDim.new(0, 8)
-    GetKeyCorner.Parent = GetKeyBtn
+    local GetKey = Instance.new("TextButton")
+    GetKey.Size = UDim2.new(0.35, 0, 0, 38)
+    GetKey.Position = UDim2.new(0.55, 0, 0, 140)
+    GetKey.Text = "TG ССЫЛКА"
+    GetKey.BackgroundColor3 = Color3.fromRGB(40, 40, 55)
+    GetKey.BorderSizePixel = 1
+    GetKey.BorderColor3 = Color3.fromRGB(200, 50, 50)
+    GetKey.TextColor3 = Color3.fromRGB(200, 50, 50)
+    GetKey.TextSize = 13
+    GetKey.Font = Enum.Font.SourceSansBold
+    GetKey.Parent = Frame
+    Instance.new("UICorner", GetKey).CornerRadius = UDim.new(0, 5)
 
-    local InfoText = Instance.new("TextLabel")
-    InfoText.Name = "InfoText"
-    InfoText.BackgroundColor3 = Color3.fromRGB(17, 18, 20)
-    InfoText.BackgroundTransparency = 1
-    InfoText.BorderColor3 = Color3.fromRGB(0, 0, 0)
-    InfoText.BorderSizePixel = 0
-    InfoText.Position = UDim2.new(0, 0, 0, 215)
-    InfoText.Size = UDim2.new(1, 0, 0, 20)
-    InfoText.FontFace = Font.new("rbxasset://fonts/families/Nunito.json")
-    InfoText.Text = "Telegram: t.me/squadrim1"
-    InfoText.TextColor3 = Color3.fromRGB(200, 50, 50)
-    InfoText.TextSize = 12
-    InfoText.Parent = Frame
+    local Info = Instance.new("TextLabel")
+    Info.Size = UDim2.new(1, 0, 0, 20)
+    Info.Position = UDim2.new(0, 0, 0, 195)
+    Info.BackgroundTransparency = 1
+    Info.Text = "Telegram: t.me/squadrim1"
+    Info.TextColor3 = Color3.fromRGB(200, 50, 50)
+    Info.TextSize = 11
+    Info.Font = Enum.Font.SourceSans
+    Info.Parent = Frame
 
-    GetKeyBtn.MouseButton1Click:Connect(function()
-        if setclipboard then
-            setclipboard("t.me/squadrim1")
-        elseif toclipboard then
-            toclipboard("t.me/squadrim1")
-        end
-        local notif = Instance.new("TextLabel")
+    GetKey.MouseButton1Click:Connect(function()
+        if setclipboard then setclipboard("t.me/squadrim1") elseif toclipboard then toclipboard("t.me/squadrim1") end
+        local notif = Instance.new("TextLabel", AuthGui)
         notif.Size = UDim2.new(0, 250, 0, 30)
         notif.Position = UDim2.new(0.5, -125, 0.7, 0)
         notif.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
         notif.BackgroundTransparency = 0.5
         notif.Text = "✅ Ссылка скопирована!"
         notif.TextColor3 = Color3.fromRGB(0, 255, 0)
-        notif.TextSize = 12
-        notif.Parent = AuthGui
         task.delay(2, function() notif:Destroy() end)
     end)
 
-    LoginBtn.MouseButton1Click:Connect(function()
-        if PasswordBox.Text == "SquadRim2024" then
+    Btn.MouseButton1Click:Connect(function()
+        if Input.Text == "SquadRim2024" then
             AuthGui:Destroy()
-            CreateMainMenu()
+            StartCheat()
         else
-            PasswordBox.Text = ""
-            PasswordBox.PlaceholderText = "НЕВЕРНЫЙ ПАРОЛЬ!"
-            PasswordBox.BackgroundColor3 = Color3.fromRGB(80, 40, 40)
+            Input.Text = ""
+            Input.PlaceholderText = "НЕВЕРНЫЙ ПАРОЛЬ!"
+            Input.BackgroundColor3 = Color3.fromRGB(80, 40, 50)
             task.wait(1.5)
-            PasswordBox.PlaceholderText = "Пароль..."
-            PasswordBox.BackgroundColor3 = Color3.fromRGB(30, 32, 40)
+            Input.PlaceholderText = "Пароль..."
+            Input.BackgroundColor3 = Color3.fromRGB(30, 30, 42)
         end
     end)
 end
 
--- ========== ГЛАВНОЕ МЕНЮ ==========
-local function CreateMainMenu()
-    local screenGui = Instance.new("ScreenGui")
-    screenGui.Name = "SquadRim_Loader"
-    screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-    screenGui.Parent = game:GetService("CoreGui")
-    screenGui.ResetOnSpawn = false
-    screenGui.DisplayOrder = 999999
-    screenGui.IgnoreGuiInset = true
+-- ========== НАСТРОЙКИ ==========
+local Settings = {
+    Legit = {aimbot = false, smooth = 15, fov = 100, drawFov = true, trigger = false, hitbox = "Head"},
+    Rage = {silent = false, fov = 300, drawFov = false},
+    Visuals = {esp = false, box = false, name = true, health = true, chams = false},
+    Misc = {fly = false, noclip = false, speed = 16}
+}
 
-    local frame = Instance.new("Frame")
-    frame.Name = "Frame"
-    frame.BackgroundColor3 = Color3.fromRGB(17, 18, 20)
-    frame.BorderColor3 = Color3.fromRGB(0, 0, 0)
-    frame.BorderSizePixel = 0
-    frame.Position = UDim2.fromScale(0.0883, 0.11)
-    frame.Size = UDim2.fromOffset(878, 550)
-    frame.Parent = screenGui
+local connections = {}
+local bodyVel = nil
+local flyActive = false
 
-    -- Drag functionality
-    frame.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            local dragStart = input.Position
-            local frameStart = frame.Position
-            local connection
-            connection = game:GetService("UserInputService").InputChanged:Connect(function(inputChanged)
-                if inputChanged.UserInputType == Enum.UserInputType.MouseMovement then
-                    local delta = inputChanged.Position - dragStart
-                    frame.Position = UDim2.new(
-                        frameStart.X.Scale,
-                        frameStart.X.Offset + delta.X,
-                        frameStart.Y.Scale,
-                        frameStart.Y.Offset + delta.Y
-                    )
-                end
-            end)
-            local endConnection
-            endConnection = game:GetService("UserInputService").InputEnded:Connect(function(inputEnded)
-                if inputEnded.UserInputType == Enum.UserInputType.MouseButton1 then
-                    connection:Disconnect()
-                    endConnection:Disconnect()
-                end
-            end)
-        end
-    end)
+-- ========== FOV КРУГИ ==========
+local LegitFOV = Drawing.new("Circle")
+LegitFOV.Thickness = 2
+LegitFOV.Color = Color3.fromRGB(0, 200, 255)
+LegitFOV.Filled = false
+LegitFOV.Transparency = 0.5
 
-    local uICorner = Instance.new("UICorner")
-    uICorner.Name = "UICorner"
-    uICorner.CornerRadius = UDim.new(0, 25)
-    uICorner.Parent = frame
+local RageFOV = Drawing.new("Circle")
+RageFOV.Thickness = 2
+RageFOV.Color = Color3.fromRGB(255, 50, 50)
+RageFOV.Filled = false
+RageFOV.Transparency = 0.5
 
-    -- Logo
-    local logo = Instance.new("ImageLabel")
-    logo.Name = "Logo"
-    logo.BackgroundTransparency = 1
-    logo.BorderSizePixel = 0
-    logo.Image = "rbxassetid://92661965333918"
-    logo.Position = UDim2.fromScale(0.755, 0.2)
-    logo.AnchorPoint = Vector2.new(0.5, 0.5)
-    logo.Size = UDim2.fromOffset(175, 175)
-    logo.Parent = frame
+-- ========== ESP ==========
+local Storage = {}
+local espFolder = Instance.new("Folder", CoreGui)
+espFolder.Name = "SquadRim_ESP"
 
-    -- Game Buttons
-    local games = {
-        {name = "Arsenal", pos = 0.0415, script = "https://raw.githubusercontent.com/blackowl1231/Z3US/refs/heads/main/Games/Z3US%20Arsenal%20Beta.lua"},
-        {name = "Planks", pos = 0.17786, script = "https://raw.githubusercontent.com/blackowl1231/Z3US/refs/heads/main/Games/Z3US%20Planks.lua"},
-        {name = "Counterblox", pos = 0.31422, script = "https://raw.githubusercontent.com/blackowl1231/Z3US/refs/heads/main/Games/Z3US%20Counterblox.lua"},
-        {name = "Gunfight Arena", pos = 0.45058, script = "https://raw.githubusercontent.com/blackowl1231/Z3US/refs/heads/main/Games/Z3US%20Gunfight%20Arena.lua"},
-        {name = "OneTap", pos = 0.58694, script = "https://api.jnkie.com/api/v1/luascripts/public/2548ffbebdf21063cd4083f93a27ac276d44d1cb6503093d9c3290c3dfd954e3/download"},
-        {name = "Universal", pos = 0.7233, script = "https://raw.githubusercontent.com/blackowl1231/Z3US/refs/heads/main/Games/Z3US%20Universal.lua"},
-        {name = "Rivals", pos = 0.85966, script = "https://api.junkie-development.de/api/v1/luascripts/public/8be52e21a0145a401c446ca7ab2b5df9bd327ea80b0cf1d2fe99e442edd0f9c9/download"}
-    }
-
-    local gameFrames = {}
-    local gameStrokes = {}
-    local selectedOption = nil
-    local selectedColor = Color3.fromRGB(140, 155, 208)
-    local defaultColor = Color3.fromRGB(26, 29, 37)
-    
-    -- Rivals specific toggles
-    local autoloadEnabled = true
-    local silentloadEnabled = false
-    local version = "New"
-
-    for _, game in ipairs(games) do
-        local gameFrame = Instance.new("Frame")
-        gameFrame.Name = game.name
-        gameFrame.BackgroundColor3 = Color3.fromRGB(17, 18, 20)
-        gameFrame.BackgroundTransparency = 0.9
-        gameFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
-        gameFrame.BorderSizePixel = 0
-        gameFrame.Position = UDim2.fromScale(0.03, game.pos)
-        gameFrame.Size = UDim2.fromOffset(330, 65)
-        gameFrame.Parent = frame
-
-        local gameStroke = Instance.new("UIStroke")
-        gameStroke.Name = "UIStroke"
-        gameStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-        gameStroke.Color = defaultColor
-        gameStroke.Thickness = 1.9
-        gameStroke.Parent = gameFrame
-
-        local uICornerGame = Instance.new("UICorner")
-        uICornerGame.Name = "UICorner"
-        uICornerGame.CornerRadius = UDim.new(0, 25)
-        uICornerGame.Parent = gameFrame
-
-        local textLabel = Instance.new("TextLabel")
-        textLabel.Name = "TextLabel"
-        textLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-        textLabel.BackgroundTransparency = 1
-        textLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
-        textLabel.BorderSizePixel = 0
-        textLabel.FontFace = Font.new("rbxasset://fonts/families/Nunito.json")
-        textLabel.Position = UDim2.fromScale(0.2, 0.0462)
-        textLabel.Size = UDim2.fromOffset(197, 58)
-        textLabel.Text = game.name
-        textLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-        textLabel.TextSize = 62
-        textLabel.TextWrapped = true
-        textLabel.Parent = gameFrame
-
-        gameFrames[game.name] = gameFrame
-        gameStrokes[game.name] = gameStroke
+local function ClearESP()
+    for _, obj in pairs(Storage) do
+        pcall(function()
+            if obj.Box then obj.Box:Remove() end
+            if obj.Name then obj.Name:Remove() end
+            if obj.Health then obj.Health:Remove() end
+            if obj.Highlight then obj.Highlight:Destroy() end
+        end)
     end
+    Storage = {}
+end
 
-    -- Load Button
-    local loadbtn = Instance.new("TextButton")
-    loadbtn.Name = "Loadbtn"
-    loadbtn.BackgroundColor3 = Color3.fromRGB(27, 29, 37)
-    loadbtn.BorderColor3 = Color3.fromRGB(0, 0, 0)
-    loadbtn.BorderSizePixel = 0
-    loadbtn.FontFace = Font.new("rbxasset://fonts/families/Nunito.json")
-    loadbtn.Position = UDim2.fromScale(0.527, 0.656)
-    loadbtn.Size = UDim2.fromOffset(405, 62)
-    loadbtn.Text = "LOAD"
-    loadbtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    loadbtn.TextScaled = true
-    loadbtn.TextSize = 14
-    loadbtn.TextWrapped = true
-    loadbtn.Parent = frame
+local function UpdateESP()
+    if not Settings.Visuals.esp then ClearESP(); return end
+    
+    for _, plr in pairs(Players:GetPlayers()) do
+        if plr == LocalPlayer then continue end
+        local char = plr.Character
+        local hrp = char and char:FindFirstChild("HumanoidRootPart")
+        local hum = char and char:FindFirstChild("Humanoid")
+        
+        if hrp and hum and hum.Health > 0 then
+            local pos, onScreen = Camera:WorldToViewportPoint(hrp.Position)
+            if onScreen then
+                if not Storage[plr] then
+                    Storage[plr] = {
+                        Box = Drawing.new("Square"),
+                        Name = Drawing.new("Text"),
+                        Health = Drawing.new("Square"),
+                        Highlight = Instance.new("Highlight")
+                    }
+                    Storage[plr].Box.Thickness = 1
+                    Storage[plr].Box.Filled = false
+                    Storage[plr].Name.Size = 13
+                    Storage[plr].Name.Center = true
+                    Storage[plr].Name.Outline = true
+                    Storage[plr].Health.Thickness = 1
+                    Storage[plr].Health.Filled = true
+                    Storage[plr].Highlight.Parent = espFolder
+                end
+                
+                local s = Storage[plr]
+                local sizeX = 2000 / pos.Z
+                local sizeY = 2800 / pos.Z
+                local x, y = pos.X - sizeX/2, pos.Y - sizeY/1.2
+                local hp = hum.Health / hum.MaxHealth
+                local hpColor = hp > 0.5 and Color3.new(0,1,0) or (hp > 0.25 and Color3.new(1,0.5,0) or Color3.new(1,0,0))
+                
+                if Settings.Visuals.box then
+                    s.Box.Visible = true
+                    s.Box.Position = Vector2.new(x, y)
+                    s.Box.Size = Vector2.new(sizeX, sizeY)
+                    s.Box.Color = Color3.new(1, 0, 0)
+                else
+                    s.Box.Visible = false
+                end
+                
+                if Settings.Visuals.name then
+                    s.Name.Visible = true
+                    s.Name.Position = Vector2.new(pos.X, y - 15)
+                    s.Name.Text = plr.Name
+                    s.Name.Color = Color3.new(1, 1, 1)
+                else
+                    s.Name.Visible = false
+                end
+                
+                if Settings.Visuals.health then
+                    s.Health.Visible = true
+                    s.Health.Position = Vector2.new(x - 6, y + (sizeY * (1 - hp)))
+                    s.Health.Size = Vector2.new(3, sizeY * hp)
+                    s.Health.Color = hpColor
+                else
+                    s.Health.Visible = false
+                end
+                
+                if Settings.Visuals.chams then
+                    s.Highlight.Enabled = true
+                    s.Highlight.Adornee = char
+                    s.Highlight.FillColor = Color3.new(1, 0, 0)
+                    s.Highlight.FillTransparency = 0.5
+                else
+                    s.Highlight.Enabled = false
+                end
+            else
+                if Storage[plr] then
+                    if Storage[plr].Box then Storage[plr].Box.Visible = false end
+                    if Storage[plr].Name then Storage[plr].Name.Visible = false end
+                    if Storage[plr].Health then Storage[plr].Health.Visible = false end
+                end
+            end
+        end
+    end
+end
 
-    local uICorner2 = Instance.new("UICorner")
-    uICorner2.Name = "UICorner"
-    uICorner2.CornerRadius = UDim.new(0, 25)
-    uICorner2.Parent = loadbtn
+-- ========== AIMBOT ==========
+local function GetTarget(fov, hitbox)
+    local target, min = nil, fov
+    local hitboxName = hitbox == "Head" and "Head" or "HumanoidRootPart"
+    local mousePos = Vector2.new(Mouse.X, Mouse.Y)
+    
+    for _, plr in pairs(Players:GetPlayers()) do
+        if plr ~= LocalPlayer and plr.Character then
+            local part = plr.Character:FindFirstChild(hitboxName)
+            local hum = plr.Character:FindFirstChild("Humanoid")
+            if part and hum and hum.Health > 0 then
+                local pos, onScreen = Camera:WorldToViewportPoint(part.Position)
+                if onScreen then
+                    local dist = (Vector2.new(pos.X, pos.Y) - mousePos).Magnitude
+                    if dist < min then
+                        min = dist
+                        target = part
+                    end
+                end
+            end
+        end
+    end
+    return target
+end
 
-    -- Close Button
-    local closeButton = Instance.new("TextButton")
-    closeButton.Name = "CloseButton"
-    closeButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    closeButton.BackgroundTransparency = 1
-    closeButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
-    closeButton.BorderSizePixel = 0
-    closeButton.FontFace = Font.new("rbxasset://fonts/families/FredokaOne.json")
-    closeButton.Position = UDim2.fromScale(0.949, 0.0172)
-    closeButton.Size = UDim2.fromOffset(44, 41)
-    closeButton.Text = "X"
-    closeButton.TextColor3 = Color3.fromRGB(58, 67, 98)
-    closeButton.TextScaled = true
-    closeButton.TextSize = 14
-    closeButton.TextWrapped = true
-    closeButton.Parent = frame
+-- Silent Aim
+pcall(function()
+    local mt = getrawmetatable(game)
+    if mt then
+        local oldIndex = mt.__index
+        setreadonly(mt, false)
+        mt.__index = function(self, key)
+            if Settings.Rage.silent and self == Mouse and key == "Hit" then
+                local target = GetTarget(Settings.Rage.fov, "Head")
+                if target then return target.CFrame end
+            end
+            return oldIndex(self, key)
+        end
+        setreadonly(mt, true)
+    end
+end)
 
-    -- Bottom Text
-    local bottomText = Instance.new("TextLabel")
-    bottomText.Name = "BottomText"
-    bottomText.BackgroundColor3 = Color3.fromRGB(17, 18, 20)
-    bottomText.BorderColor3 = Color3.fromRGB(0, 0, 0)
-    bottomText.BorderSizePixel = 0
-    bottomText.FontFace = Font.new("rbxasset://fonts/families/Nunito.json")
-    bottomText.Position = UDim2.fromScale(0.628, 0.821)
-    bottomText.Size = UDim2.fromOffset(200, 50)
-    bottomText.Text = "SQUADRIM DLC"
-    bottomText.TextColor3 = Color3.fromRGB(200, 50, 50)
-    bottomText.TextSize = 34
-    bottomText.Parent = frame
-
-    -- Selected Script Text
-    local selectedText = Instance.new("TextLabel")
-    selectedText.Name = "SelectedText"
-    selectedText.BackgroundColor3 = Color3.fromRGB(17, 18, 20)
-    selectedText.BorderColor3 = Color3.fromRGB(0, 0, 0)
-    selectedText.BorderSizePixel = 0
-    selectedText.FontFace = Font.new("rbxasset://fonts/families/Nunito.json")
-    selectedText.Position = UDim2.fromScale(0.645, 0.447)
-    selectedText.Size = UDim2.fromOffset(200, 50)
-    selectedText.Text = "No Script Selected"
-    selectedText.TextColor3 = Color3.fromRGB(255, 255, 255)
-    selectedText.TextSize = 34
-    selectedText.Parent = frame
-
-    -- Confirmation Panel
-    local blackidk = Instance.new("Frame")
-    blackidk.Name = "blackidk"
-    blackidk.Parent = frame
-    blackidk.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    blackidk.BackgroundTransparency = 0.2
-    blackidk.BorderSizePixel = 0
-    blackidk.Size = UDim2.new(1, 0, 1, 0)
-    blackidk.ZIndex = 8
-    blackidk.Visible = false
-
-    local confipanel = Instance.new("Frame")
-    confipanel.Name = "confipanel"
-    confipanel.Parent = frame
-    confipanel.BackgroundColor3 = Color3.fromRGB(17, 18, 20)
-    confipanel.BackgroundTransparency = 0
-    confipanel.BorderColor3 = Color3.fromRGB(0, 0, 0)
-    confipanel.BorderSizePixel = 0
-    confipanel.Position = UDim2.new(0.5, -200, 0.5, -75)
-    confipanel.Size = UDim2.new(0, 400, 0, 150)
-    confipanel.Visible = false
-    confipanel.ZIndex = 10
-
-    local confirmCorner = Instance.new("UICorner")
-    confirmCorner.CornerRadius = UDim.new(0, 12)
-    confirmCorner.Parent = confipanel
-
-    local confirmStroke = Instance.new("UIStroke")
-    confirmStroke.Color = Color3.fromRGB(26, 29, 37)
-    confirmStroke.Thickness = 2
-    confirmStroke.Parent = confipanel
-
-    local confirmText = Instance.new("TextLabel")
-    confirmText.Name = "ConfirmText"
-    confirmText.Parent = confipanel
-    confirmText.BackgroundTransparency = 1
-    confirmText.Size = UDim2.new(1, -20, 0, 70)
-    confirmText.Position = UDim2.new(0, 10, 0, 10)
-    confirmText.FontFace = Font.new("rbxasset://fonts/families/Nunito.json")
-    confirmText.Text = "ВНИМАНИЕ: Этот скрипт может быть не защищён!\nВы всё равно хотите его загрузить?"
-    confirmText.TextColor3 = Color3.fromRGB(255, 255, 255)
-    confirmText.TextSize = 18
-    confirmText.TextWrapped = true
-    confirmText.TextXAlignment = Enum.TextXAlignment.Center
-
-    local confirmYes = Instance.new("TextButton")
-    confirmYes.Name = "ConfirmYes"
-    confirmYes.Parent = confipanel
-    confirmYes.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
-    confirmYes.Size = UDim2.new(0, 100, 0, 35)
-    confirmYes.Position = UDim2.new(0.5, -110, 1, -45)
-    confirmYes.FontFace = Font.new("rbxasset://fonts/families/Nunito.json")
-    confirmYes.Text = "Да"
-    confirmYes.TextColor3 = Color3.fromRGB(255, 255, 255)
-    confirmYes.TextSize = 18
-    local yesCorner = Instance.new("UICorner")
-    yesCorner.CornerRadius = UDim.new(0, 8)
-    yesCorner.Parent = confirmYes
-
-    local confirmNo = Instance.new("TextButton")
-    confirmNo.Name = "ConfirmNo"
-    confirmNo.Parent = confipanel
-    confirmNo.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-    confirmNo.Size = UDim2.new(0, 100, 0, 35)
-    confirmNo.Position = UDim2.new(0.5, 10, 1, -45)
-    confirmNo.FontFace = Font.new("rbxasset://fonts/families/Nunito.json")
-    confirmNo.Text = "Нет"
-    confirmNo.TextColor3 = Color3.fromRGB(255, 255, 255)
-    confirmNo.TextSize = 18
-    local noCorner = Instance.new("UICorner")
-    noCorner.CornerRadius = UDim.new(0, 8)
-    noCorner.Parent = confirmNo
-
-    -- Rivals Toggle Container
-    local rivalsToggleContainer = Instance.new("Frame")
-    rivalsToggleContainer.Name = "RivalsToggleContainer"
-    rivalsToggleContainer.Parent = frame
-    rivalsToggleContainer.BackgroundColor3 = Color3.fromRGB(17, 18, 20)
-    rivalsToggleContainer.BackgroundTransparency = 0.9
-    rivalsToggleContainer.BorderColor3 = Color3.fromRGB(0, 0, 0)
-    rivalsToggleContainer.BorderSizePixel = 0
-    rivalsToggleContainer.Position = UDim2.new(0.60, 0, 0.53, 0)
-    rivalsToggleContainer.Size = UDim2.new(0, 280, 0, 65)
-    rivalsToggleContainer.Visible = false
-
-    local containerStroke = Instance.new("UIStroke")
-    containerStroke.Parent = rivalsToggleContainer
-    containerStroke.Color = Color3.fromRGB(26, 29, 37)
-    containerStroke.Thickness = 2
-    containerStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-
-    local uICornerContainer = Instance.new("UICorner")
-    uICornerContainer.CornerRadius = UDim.new(0, 25)
-    uICornerContainer.Parent = rivalsToggleContainer
-
-    -- Autoload Toggle
-    local autoloadToggle = Instance.new("Frame")
-    autoloadToggle.Name = "AutoloadToggle"
-    autoloadToggle.Parent = rivalsToggleContainer
-    autoloadToggle.BackgroundColor3 = Color3.fromRGB(17, 18, 20)
-    autoloadToggle.BackgroundTransparency = 0.9
-    autoloadToggle.BorderColor3 = Color3.fromRGB(0, 0, 0)
-    autoloadToggle.BorderSizePixel = 0
-    autoloadToggle.Position = UDim2.new(0.05, 0, 0.15, 0)
-    autoloadToggle.Size = UDim2.new(0, 120, 0, 45)
-
-    local toggleStroke = Instance.new("UIStroke")
-    toggleStroke.Parent = autoloadToggle
-    toggleStroke.Color = Color3.fromRGB(26, 29, 37)
-    toggleStroke.Thickness = 2
-    toggleStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-
-    local uICornerToggle = Instance.new("UICorner")
-    uICornerToggle.CornerRadius = UDim.new(0, 15)
-    uICornerToggle.Parent = autoloadToggle
-
-    local toggleLabel = Instance.new("TextLabel")
-    toggleLabel.Name = "ToggleLabel"
-    toggleLabel.Parent = autoloadToggle
-    toggleLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    toggleLabel.BackgroundTransparency = 1
-    toggleLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
-    toggleLabel.BorderSizePixel = 0
-    toggleLabel.Position = UDim2.new(0.05, 0, 0, 0)
-    toggleLabel.Size = UDim2.new(0, 70, 0, 45)
-    toggleLabel.FontFace = Font.new("rbxasset://fonts/families/Nunito.json")
-    toggleLabel.Text = "Autoload:"
-    toggleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    toggleLabel.TextSize = 16
-    toggleLabel.TextXAlignment = Enum.TextXAlignment.Left
-
-    local toggleButton = Instance.new("TextButton")
-    toggleButton.Name = "ToggleButton"
-    toggleButton.Parent = autoloadToggle
-    toggleButton.BackgroundColor3 = Color3.fromRGB(140, 155, 208)
-    toggleButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
-    toggleButton.BorderSizePixel = 0
-    toggleButton.Position = UDim2.new(0.60, 0, 0.15, 0)
-    toggleButton.Size = UDim2.new(0, 40, 0, 30)
-    toggleButton.FontFace = Font.new("rbxasset://fonts/families/Nunito.json")
-    toggleButton.Text = "ON"
-    toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-    toggleButton.TextSize = 14
-    toggleButton.TextWrapped = true
-
-    local uICornerToggleBtn = Instance.new("UICorner")
-    uICornerToggleBtn.CornerRadius = UDim.new(0, 10)
-    uICornerToggleBtn.Parent = toggleButton
-
-    -- Silentload Toggle
-    local silentloadToggle = Instance.new("Frame")
-    silentloadToggle.Name = "SilentloadToggle"
-    silentloadToggle.Parent = rivalsToggleContainer
-    silentloadToggle.BackgroundColor3 = Color3.fromRGB(17, 18, 20)
-    silentloadToggle.BackgroundTransparency = 0.9
-    silentloadToggle.BorderColor3 = Color3.fromRGB(0, 0, 0)
-    silentloadToggle.BorderSizePixel = 0
-    silentloadToggle.Position = UDim2.new(0.55, 0, 0.15, 0)
-    silentloadToggle.Size = UDim2.new(0, 120, 0, 45)
-
-    local silentloadStroke = Instance.new("UIStroke")
-    silentloadStroke.Parent = silentloadToggle
-    silentloadStroke.Color = Color3.fromRGB(26, 29, 37)
-    silentloadStroke.Thickness = 2
-    silentloadStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-
-    local uICornerSilentload = Instance.new("UICorner")
-    uICornerSilentload.CornerRadius = UDim.new(0, 15)
-    uICornerSilentload.Parent = silentloadToggle
-
-    local silentloadLabel = Instance.new("TextLabel")
-    silentloadLabel.Name = "SilentloadLabel"
-    silentloadLabel.Parent = silentloadToggle
-    silentloadLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    silentloadLabel.BackgroundTransparency = 1
-    silentloadLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
-    silentloadLabel.BorderSizePixel = 0
-    silentloadLabel.Position = UDim2.new(0.05, 0, 0, 0)
-    silentloadLabel.Size = UDim2.new(0, 70, 0, 45)
-    silentloadLabel.FontFace = Font.new("rbxasset://fonts/families/Nunito.json")
-    silentloadLabel.Text = "Silentload:"
-    silentloadLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    silentloadLabel.TextSize = 16
-    silentloadLabel.TextXAlignment = Enum.TextXAlignment.Left
-
-    local silentloadButton = Instance.new("TextButton")
-    silentloadButton.Name = "SilentloadButton"
-    silentloadButton.Parent = silentloadToggle
-    silentloadButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-    silentloadButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
-    silentloadButton.BorderSizePixel = 0
-    silentloadButton.Position = UDim2.new(0.60, 0, 0.15, 0)
-    silentloadButton.Size = UDim2.new(0, 40, 0, 30)
-    silentloadButton.FontFace = Font.new("rbxasset://fonts/families/Nunito.json")
-    silentloadButton.Text = "OFF"
-    silentloadButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-    silentloadButton.TextSize = 14
-    silentloadButton.TextWrapped = true
-
-    local uICornerSilentloadBtn = Instance.new("UICorner")
-    uICornerSilentloadBtn.CornerRadius = UDim.new(0, 10)
-    uICornerSilentloadBtn.Parent = silentloadButton
-
-    -- Version Toggle for Counterblox
-    local VersionToggle = Instance.new("Frame")
-    VersionToggle.Name = "VersionToggle"
-    VersionToggle.Parent = frame
-    VersionToggle.BackgroundColor3 = Color3.fromRGB(17, 18, 20)
-    VersionToggle.BackgroundTransparency = 0.9
-    VersionToggle.BorderColor3 = Color3.fromRGB(0, 0, 0)
-    VersionToggle.BorderSizePixel = 0
-    VersionToggle.Position = UDim2.new(0.60, 0, 0.53, 0)
-    VersionToggle.Size = UDim2.new(0, 280, 0, 50)
-    VersionToggle.Visible = false
-
-    local versiontoggleStroke = Instance.new("UIStroke")
-    versiontoggleStroke.Parent = VersionToggle
-    versiontoggleStroke.Color = Color3.fromRGB(26, 29, 37)
-    versiontoggleStroke.Thickness = 2
-    versiontoggleStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-
-    local uICornerversionToggle = Instance.new("UICorner")
-    uICornerversionToggle.CornerRadius = UDim.new(0, 25)
-    uICornerversionToggle.Parent = VersionToggle
-
-    local versionLabel = Instance.new("TextLabel")
-    versionLabel.Name = "versionLabel"
-    versionLabel.Parent = VersionToggle
-    versionLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    versionLabel.BackgroundTransparency = 1
-    versionLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
-    versionLabel.BorderSizePixel = 0
-    versionLabel.Position = UDim2.new(0.05, 0, 0, 0)
-    versionLabel.Size = UDim2.new(0, 160, 0, 50)
-    versionLabel.FontFace = Font.new("rbxasset://fonts/families/Nunito.json")
-    versionLabel.Text = "Version:"
-    versionLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    versionLabel.TextSize = 20
-    versionLabel.TextXAlignment = Enum.TextXAlignment.Left
-
-    local versionButton = Instance.new("TextButton")
-    versionButton.Name = "versionButton"
-    versionButton.Parent = VersionToggle
-    versionButton.BackgroundColor3 = Color3.fromRGB(140, 155, 208)
-    versionButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
-    versionButton.BorderSizePixel = 0
-    versionButton.Position = UDim2.new(0.65, 0, 0.15, 0)
-    versionButton.Size = UDim2.new(0, 80, 0, 35)
-    versionButton.FontFace = Font.new("rbxasset://fonts/families/Nunito.json")
-    versionButton.Text = "New"
-    versionButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-    versionButton.TextSize = 18
-    versionButton.TextWrapped = true
-
-    local uICornerversionButton = Instance.new("UICorner")
-    uICornerversionButton.CornerRadius = UDim.new(0, 15)
-    uICornerversionButton.Parent = versionButton
-
-    -- Functions
-    local function updateToggleAppearance()
-        if autoloadEnabled then
-            toggleButton.BackgroundColor3 = Color3.fromRGB(140, 155, 208)
-            toggleButton.Text = "ON"
-        else
-            toggleButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-            toggleButton.Text = "OFF"
+-- ========== FLY / NOCLIP ==========
+local function SetupFly()
+    table.insert(connections, RunService.RenderStepped:Connect(function()
+        if not Settings.Misc.fly then
+            if bodyVel then bodyVel:Destroy() end
+            flyActive = false
+            return
         end
         
-        if silentloadEnabled then
-            silentloadButton.BackgroundColor3 = Color3.fromRGB(140, 155, 208)
-            silentloadButton.Text = "ON"
-        else
-            silentloadButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-            silentloadButton.Text = "OFF"
+        local char = LocalPlayer.Character
+        if not char then return end
+        local root = char:FindFirstChild("HumanoidRootPart")
+        if not root then return end
+        
+        if not flyActive then
+            flyActive = true
+            bodyVel = Instance.new("BodyVelocity")
+            bodyVel.MaxForce = Vector3.new(1e9, 1e9, 1e9)
+            bodyVel.Parent = root
         end
+        
+        local dir = Vector3.new()
+        if UserInputService:IsKeyDown(Enum.KeyCode.W) then dir = dir + Camera.CFrame.LookVector end
+        if UserInputService:IsKeyDown(Enum.KeyCode.S) then dir = dir - Camera.CFrame.LookVector end
+        if UserInputService:IsKeyDown(Enum.KeyCode.A) then dir = dir - Camera.CFrame.RightVector end
+        if UserInputService:IsKeyDown(Enum.KeyCode.D) then dir = dir + Camera.CFrame.RightVector end
+        if UserInputService:IsKeyDown(Enum.KeyCode.Space) then dir = dir + Vector3.new(0, 1, 0) end
+        if UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then dir = dir - Vector3.new(0, 1, 0) end
+        
+        bodyVel.Velocity = dir.Magnitude > 0 and dir.Unit * Settings.Misc.speed or Vector3.new(0, 0, 0)
+    end))
+end
 
-        if version == "New" then
-            versionButton.BackgroundColor3 = Color3.fromRGB(140, 155, 208)
-            versionButton.Text = "New"
-        else
-            versionButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-            versionButton.Text = "Old"
-        end
-    end
-
-    local function selectScript(scriptFrame, scriptName)
-        for name, stroke in pairs(gameStrokes) do
-            stroke.Color = defaultColor
-        end
-        rivalsToggleContainer.Visible = false
-        VersionToggle.Visible = false
-
-        if scriptFrame then
-            scriptFrame:FindFirstChildOfClass("UIStroke").Color = selectedColor
-            selectedOption = scriptName
-            selectedText.Text = scriptName
-
-            if scriptName == "Rivals" then
-                rivalsToggleContainer.Visible = true
-                updateToggleAppearance()
+local function SetupNoclip()
+    table.insert(connections, RunService.Stepped:Connect(function()
+        if not Settings.Misc.noclip then return end
+        local char = LocalPlayer.Character
+        if char then
+            for _, part in ipairs(char:GetDescendants()) do
+                if part:IsA("BasePart") then
+                    part.CanCollide = false
+                end
             end
-
-            if scriptName == "Counterblox" then
-                VersionToggle.Visible = true
-                updateToggleAppearance()
-            end
-        else 
-            selectedOption = nil
-            selectedText.Text = "No Script Selected"
         end
-    end
+    end))
+end
 
-    -- Connect game buttons
-    for name, gameFrame in pairs(gameFrames) do
-        gameFrame.InputBegan:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                selectScript(gameFrame, name)
+-- ========== CONFIG ==========
+local function SaveConfig()
+    writefile("SquadRim_Config.json", HttpService:JSONEncode({
+        Legit = Settings.Legit, Rage = Settings.Rage, Visuals = Settings.Visuals, Misc = Settings.Misc
+    }))
+    local notif = Instance.new("TextLabel", CoreGui)
+    notif.Size = UDim2.new(0, 200, 0, 30)
+    notif.Position = UDim2.new(0.5, -100, 0.3, 0)
+    notif.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    notif.BackgroundTransparency = 0.5
+    notif.Text = "✅ Config Saved"
+    notif.TextColor3 = Color3.fromRGB(0, 255, 0)
+    task.delay(2, function() notif:Destroy() end)
+end
+
+local function LoadConfig()
+    if isfile("SquadRim_Config.json") then
+        local data = HttpService:JSONDecode(readfile("SquadRim_Config.json"))
+        Settings.Legit = data.Legit or Settings.Legit
+        Settings.Rage = data.Rage or Settings.Rage
+        Settings.Visuals = data.Visuals or Settings.Visuals
+        Settings.Misc = data.Misc or Settings.Misc
+        local notif = Instance.new("TextLabel", CoreGui)
+        notif.Size = UDim2.new(0, 200, 0, 30)
+        notif.Position = UDim2.new(0.5, -100, 0.3, 0)
+        notif.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+        notif.BackgroundTransparency = 0.5
+        notif.Text = "✅ Config Loaded"
+        notif.TextColor3 = Color3.fromRGB(0, 255, 0)
+        task.delay(2, function() notif:Destroy() end)
+    end
+end
+
+-- ========== HUD ==========
+local HUD = Instance.new("TextLabel", CoreGui)
+HUD.Size = UDim2.new(0, 400, 0, 26)
+HUD.Position = UDim2.new(0.5, -200, 0, 10)
+HUD.BackgroundColor3 = Color3.fromRGB(10, 10, 18)
+HUD.BackgroundTransparency = 0.2
+HUD.BorderSizePixel = 1
+HUD.BorderColor3 = Color3.fromRGB(200, 50, 50)
+HUD.TextColor3 = Color3.fromRGB(200, 50, 50)
+HUD.TextSize = 13
+HUD.Font = Enum.Font.SourceSansBold
+Instance.new("UICorner", HUD).CornerRadius = UDim.new(0, 4)
+
+local fpsValues = {}
+local function UpdateHUD()
+    local fps = math.floor(1 / RunService.RenderStepped:Wait())
+    table.insert(fpsValues, fps)
+    if #fpsValues > 10 then table.remove(fpsValues, 1) end
+    local sum = 0 for _, v in pairs(fpsValues) do sum = sum + v end
+    HUD.Text = string.format("| t.me/squadrim1 | DLC | FREE | %s | %d FPS |", LocalPlayer.Name, math.floor(sum / #fpsValues))
+end
+
+-- ========== ImGUI МЕНЮ ==========
+local MenuGui = nil
+local MenuFrame = nil
+local currentTab = "Legit"
+
+local function CreateMenu()
+    MenuGui = Instance.new("ScreenGui", CoreGui)
+    MenuGui.Name = "SquadRim_Menu"
+    MenuGui.ResetOnSpawn = false
+    
+    MenuFrame = Instance.new("Frame", MenuGui)
+    MenuFrame.Size = UDim2.new(0, 550, 0, 420)
+    MenuFrame.Position = UDim2.new(0.5, -275, 0.5, -210)
+    MenuFrame.BackgroundColor3 = Color3.fromRGB(14, 16, 24)
+    MenuFrame.BorderSizePixel = 2
+    MenuFrame.BorderColor3 = Color3.fromRGB(200, 50, 50)
+    MenuFrame.Active = true
+    MenuFrame.Draggable = true
+    MenuFrame.Visible = false
+    Instance.new("UICorner", MenuFrame).CornerRadius = UDim.new(0, 8)
+    
+    -- Header
+    local Header = Instance.new("Frame", MenuFrame)
+    Header.Size = UDim2.new(1, 0, 0, 45)
+    Header.BackgroundColor3 = Color3.fromRGB(20, 22, 32)
+    Header.BorderSizePixel = 0
+    Instance.new("UICorner", Header).CornerRadius = UDim.new(0, 8)
+    
+    local Title = Instance.new("TextLabel", Header)
+    Title.Size = UDim2.new(1, -50, 0, 45)
+    Title.Position = UDim2.new(0, 12, 0, 0)
+    Title.BackgroundTransparency = 1
+    Title.Text = "SQUADRIM DLC | ImGUI"
+    Title.TextColor3 = Color3.fromRGB(200, 50, 50)
+    Title.TextSize = 18
+    Title.Font = Enum.Font.SourceSansBold
+    Title.TextXAlignment = Enum.TextXAlignment.Left
+    
+    local CloseBtn = Instance.new("TextButton", Header)
+    CloseBtn.Size = UDim2.new(0, 30, 0, 30)
+    CloseBtn.Position = UDim2.new(1, -40, 0, 8)
+    CloseBtn.BackgroundColor3 = Color3.fromRGB(30, 32, 44)
+    CloseBtn.BorderSizePixel = 1
+    CloseBtn.BorderColor3 = Color3.fromRGB(60, 65, 80)
+    CloseBtn.Text = "✕"
+    CloseBtn.TextColor3 = Color3.fromRGB(200, 200, 200)
+    CloseBtn.TextSize = 14
+    CloseBtn.Font = Enum.Font.SourceSansBold
+    Instance.new("UICorner", CloseBtn).CornerRadius = UDim.new(0, 4)
+    CloseBtn.MouseButton1Click:Connect(function() MenuFrame.Visible = false end)
+    
+    -- Tabs
+    local TabBar = Instance.new("Frame", MenuFrame)
+    TabBar.Size = UDim2.new(1, 0, 0, 40)
+    TabBar.Position = UDim2.new(0, 0, 0, 45)
+    TabBar.BackgroundColor3 = Color3.fromRGB(10, 12, 20)
+    TabBar.BorderSizePixel = 1
+    TabBar.BorderColor3 = Color3.fromRGB(30, 35, 45)
+    
+    local Tabs = {"Legit", "Rage", "Visuals", "Misc", "Config"}
+    local TabBtns = {}
+    local Pages = {}
+    
+    for i, tab in ipairs(Tabs) do
+        local Btn = Instance.new("TextButton", TabBar)
+        Btn.Size = UDim2.new(0.2, 0, 1, 0)
+        Btn.Position = UDim2.new((i-1)/5, 0, 0, 0)
+        Btn.BackgroundColor3 = i == 1 and Color3.fromRGB(200, 50, 50) or Color3.fromRGB(10, 12, 20)
+        Btn.BorderSizePixel = 0
+        Btn.Text = tab
+        Btn.TextColor3 = Color3.fromRGB(220, 220, 220)
+        Btn.TextSize = 12
+        Btn.Font = Enum.Font.SourceSansBold
+        TabBtns[tab] = Btn
+        
+        local Page = Instance.new("ScrollingFrame", MenuFrame)
+        Page.Size = UDim2.new(1, -20, 1, -105)
+        Page.Position = UDim2.new(0, 10, 0, 95)
+        Page.BackgroundTransparency = 1
+        Page.Visible = (i == 1)
+        Page.CanvasSize = UDim2.new(0, 0, 0, 400)
+        Page.ScrollBarThickness = 4
+        
+        local Layout = Instance.new("UIListLayout", Page)
+        Layout.Padding = UDim.new(0, 8)
+        Layout.SortOrder = Enum.SortOrder.LayoutOrder
+        
+        Pages[tab] = Page
+        
+        Btn.MouseButton1Click:Connect(function()
+            for _, bt in pairs(TabBtns) do bt.BackgroundColor3 = Color3.fromRGB(10, 12, 20) end
+            Btn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+            for _, pg in pairs(Pages) do pg.Visible = false end
+            Page.Visible = true
+        end)
+    end
+    
+    local function MakeToggle(parent, text, getter, setter)
+        local btn = Instance.new("TextButton", parent)
+        btn.Size = UDim2.new(1, 0, 0, 35)
+        btn.BackgroundColor3 = Color3.fromRGB(25, 28, 40)
+        btn.BorderSizePixel = 1
+        btn.BorderColor3 = Color3.fromRGB(45, 50, 65)
+        btn.Text = text .. ": " .. (getter() and "ON" or "OFF")
+        btn.TextColor3 = Color3.fromRGB(220, 220, 220)
+        btn.TextSize = 12
+        btn.Font = Enum.Font.SourceSansBold
+        Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 4)
+        btn.MouseButton1Click:Connect(function()
+            local newVal = not getter()
+            setter(newVal)
+            btn.Text = text .. ": " .. (newVal and "ON" or "OFF")
+        end)
+    end
+    
+    local function MakeSlider(parent, text, min, max, getter, setter)
+        local frame = Instance.new("Frame", parent)
+        frame.Size = UDim2.new(1, 0, 0, 55)
+        frame.BackgroundColor3 = Color3.fromRGB(25, 28, 40)
+        frame.BorderSizePixel = 1
+        frame.BorderColor3 = Color3.fromRGB(45, 50, 65)
+        Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 4)
+        
+        local label = Instance.new("TextLabel", frame)
+        label.Size = UDim2.new(0.6, 0, 0, 22)
+        label.Position = UDim2.new(0, 8, 0, 5)
+        label.BackgroundTransparency = 1
+        label.Text = text
+        label.TextColor3 = Color3.fromRGB(200, 200, 220)
+        label.TextSize = 12
+        label.Font = Enum.Font.SourceSans
+        
+        local valueLabel = Instance.new("TextLabel", frame)
+        valueLabel.Size = UDim2.new(0.3, 0, 0, 22)
+        valueLabel.Position = UDim2.new(0.7, 0, 0, 5)
+        valueLabel.BackgroundTransparency = 1
+        valueLabel.Text = tostring(getter())
+        valueLabel.TextColor3 = Color3.fromRGB(200, 50, 50)
+        valueLabel.TextSize = 11
+        valueLabel.Font = Enum.Font.ShareTechMono
+        valueLabel.TextXAlignment = Enum.TextXAlignment.Right
+        
+        local track = Instance.new("Frame", frame)
+        track.Size = UDim2.new(0.96, 0, 0, 4)
+        track.Position = UDim2.new(0.02, 0, 0, 38)
+        track.BackgroundColor3 = Color3.fromRGB(45, 50, 65)
+        track.BorderSizePixel = 0
+        
+        local fill = Instance.new("Frame", track)
+        fill.Size = UDim2.new((getter() - min) / (max - min), 0, 1, 0)
+        fill.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+        fill.BorderSizePixel = 0
+        
+        local knob = Instance.new("Frame", track)
+        knob.Size = UDim2.new(0, 10, 0, 10)
+        knob.Position = UDim2.new((getter() - min) / (max - min), -5, 0, -3)
+        knob.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+        knob.BorderSizePixel = 1
+        knob.BorderColor3 = Color3.fromRGB(255, 255, 255)
+        Instance.new("UICorner", knob).CornerRadius = UDim.new(1, 0)
+        
+        local dragging = false
+        track.InputBegan:Connect(function(i)
+            if i.UserInputType == Enum.UserInputType.MouseButton1 then
+                dragging = true
+                local percent = math.clamp((Mouse.X - track.AbsolutePosition.X) / track.AbsoluteSize.X, 0, 1)
+                local val = math.floor(min + (max - min) * percent)
+                setter(val)
+                fill.Size = UDim2.new(percent, 0, 1, 0)
+                knob.Position = UDim2.new(percent, -5, 0, -3)
+                valueLabel.Text = tostring(val)
+            end
+        end)
+        track.InputEnded:Connect(function() dragging = false end)
+        UserInputService.InputChanged:Connect(function(i)
+            if dragging and i.UserInputType == Enum.UserInputType.MouseMovement then
+                local percent = math.clamp((Mouse.X - track.AbsolutePosition.X) / track.AbsoluteSize.X, 0, 1)
+                local val = math.floor(min + (max - min) * percent)
+                setter(val)
+                fill.Size = UDim2.new(percent, 0, 1, 0)
+                knob.Position = UDim2.new(percent, -5, 0, -3)
+                valueLabel.Text = tostring(val)
             end
         end)
     end
-
-    -- Rivals confirmation
-    gameFrames["Rivals"].InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            confipanel.Visible = true
-            blackidk.Visible = true
-        end
-    end)
-
-    confirmYes.MouseButton1Click:Connect(function()
-        confipanel.Visible = false
-        blackidk.Visible = false
-        selectScript(gameFrames["Rivals"], "Rivals")
-    end)
-
-    confirmNo.MouseButton1Click:Connect(function()
-        confipanel.Visible = false
-        blackidk.Visible = false
-    end)
-
-    -- Toggle buttons
-    toggleButton.MouseButton1Click:Connect(function()
-        autoloadEnabled = not autoloadEnabled
-        updateToggleAppearance()
-    end)
-
-    silentloadButton.MouseButton1Click:Connect(function()
-        silentloadEnabled = not silentloadEnabled
-        updateToggleAppearance()
-    end)
-
-    versionButton.MouseButton1Click:Connect(function()
-        version = version == "Old" and "New" or "Old"
-        updateToggleAppearance()
-    end)
-
-    -- Load button
-    loadbtn.MouseButton1Click:Connect(function()
-        if selectedOption then
-            if selectedOption == "Arsenal" then
-                loadstring(game:HttpGet("https://raw.githubusercontent.com/blackowl1231/Z3US/refs/heads/main/Games/Z3US%20Arsenal%20Beta.lua"))()
-            elseif selectedOption == "Planks" then
-                loadstring(game:HttpGet("https://raw.githubusercontent.com/blackowl1231/Z3US/refs/heads/main/Games/Z3US%20Planks.lua"))()
-            elseif selectedOption == "OneTap" then
-                getgenv().SCRIPT_KEY = ""
-                loadstring(game:HttpGet("https://api.jnkie.com/api/v1/luascripts/public/2548ffbebdf21063cd4083f93a27ac276d44d1cb6503093d9c3290c3dfd954e3/download"))()
-            elseif selectedOption == "Rivals" then
-                repeat task.wait() until game:IsLoaded()
-                repeat task.wait() until game:GetService("Players").LocalPlayer and game:GetService("Players").LocalPlayer.Character
-                repeat task.wait() until not game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui"):FindFirstChild("LoadingScreen")
-                getgenv().autoload = autoloadEnabled
-                getgenv().silentload = silentloadEnabled
-                getgenv().SCRIPT_KEY = ""
-                loadstring(game:HttpGet("https://api.junkie-development.de/api/v1/luascripts/public/8be52e21a0145a401c446ca7ab2b5df9bd327ea80b0cf1d2fe99e442edd0f9c9/download"))()
-            elseif selectedOption == "Counterblox" then
-                if version == "New" then
-                    getgenv().SCRIPT_KEY = ""
-                    loadstring(game:HttpGet("https://api.junkie-development.de/api/v1/luascripts/public/2438cfd42af811d55492e854318eeda24a73aa5d0b11a403ec1f7542abd8f2f0/download"))()
-                else
-                    loadstring(game:HttpGet("https://raw.githubusercontent.com/blackowl1231/Z3US/refs/heads/main/Games/Z3US%20Counterblox.lua"))()
-                end
-            elseif selectedOption == "Gunfight Arena" then
-                loadstring(game:HttpGet("https://raw.githubusercontent.com/blackowl1231/Z3US/refs/heads/main/Games/Z3US%20Gunfight%20Arena.lua"))()
-            elseif selectedOption == "Universal" then
-                loadstring(game:HttpGet("https://raw.githubusercontent.com/blackowl1231/Z3US/refs/heads/main/Games/Z3US%20Universal.lua"))()
+    
+    local function MakeDropdown(parent, text, options, getter, setter)
+        local frame = Instance.new("Frame", parent)
+        frame.Size = UDim2.new(1, 0, 0, 55)
+        frame.BackgroundColor3 = Color3.fromRGB(25, 28, 40)
+        frame.BorderSizePixel = 1
+        frame.BorderColor3 = Color3.fromRGB(45, 50, 65)
+        Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 4)
+        
+        local label = Instance.new("TextLabel", frame)
+        label.Size = UDim2.new(1, 0, 0, 20)
+        label.Position = UDim2.new(0, 8, 0, 5)
+        label.BackgroundTransparency = 1
+        label.Text = text
+        label.TextColor3 = Color3.fromRGB(150, 160, 180)
+        label.TextSize = 11
+        label.Font = Enum.Font.SourceSans
+        
+        local btn = Instance.new("TextButton", frame)
+        btn.Size = UDim2.new(0.96, 0, 0, 30)
+        btn.Position = UDim2.new(0.02, 0, 0, 25)
+        btn.BackgroundColor3 = Color3.fromRGB(35, 38, 48)
+        btn.BorderSizePixel = 1
+        btn.BorderColor3 = Color3.fromRGB(55, 60, 75)
+        btn.Text = getter()
+        btn.TextColor3 = Color3.fromRGB(200, 50, 50)
+        btn.TextSize = 12
+        btn.Font = Enum.Font.SourceSansBold
+        Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 3)
+        
+        local open = false
+        local dropdown = nil
+        btn.MouseButton1Click:Connect(function()
+            if open and dropdown then dropdown:Destroy() end
+            open = true
+            dropdown = Instance.new("Frame", frame)
+            dropdown.Size = UDim2.new(0.96, 0, 0, 30 * #options)
+            dropdown.Position = UDim2.new(0.02, 0, 0, 55)
+            dropdown.BackgroundColor3 = Color3.fromRGB(35, 38, 48)
+            dropdown.BorderSizePixel = 1
+            dropdown.BorderColor3 = Color3.fromRGB(55, 60, 75)
+            Instance.new("UICorner", dropdown).CornerRadius = UDim.new(0, 3)
+            
+            for i, opt in ipairs(options) do
+                local optBtn = Instance.new("TextButton", dropdown)
+                optBtn.Size = UDim2.new(1, 0, 0, 30)
+                optBtn.Position = UDim2.new(0, 0, 0, 30 * (i-1))
+                optBtn.BackgroundColor3 = Color3.fromRGB(40, 43, 55)
+                optBtn.Text = opt
+                optBtn.TextColor3 = Color3.fromRGB(200, 210, 220)
+                optBtn.TextSize = 11
+                optBtn.Font = Enum.Font.SourceSans
+                optBtn.MouseButton1Click:Connect(function()
+                    setter(opt)
+                    btn.Text = opt
+                    dropdown:Destroy()
+                    open = false
+                end)
             end
-        else
-            selectedText.Text = "Выберите скрипт!"
-            task.wait(2)
-            selectedText.Text = "No Script Selected"
-        end
+        end)
+    end
+    
+    -- LEGIT PAGE
+    MakeToggle(Pages["Legit"], "Legit Aimbot", function() return Settings.Legit.aimbot end, function(v) Settings.Legit.aimbot = v end)
+    MakeSlider(Pages["Legit"], "Smoothness", 1, 50, function() return Settings.Legit.smooth end, function(v) Settings.Legit.smooth = v end)
+    MakeSlider(Pages["Legit"], "FOV", 30, 300, function() return Settings.Legit.fov end, function(v) Settings.Legit.fov = v end)
+    MakeToggle(Pages["Legit"], "Draw FOV", function() return Settings.Legit.drawFov end, function(v) Settings.Legit.drawFov = v end)
+    MakeToggle(Pages["Legit"], "Triggerbot", function() return Settings.Legit.trigger end, function(v) Settings.Legit.trigger = v end)
+    MakeDropdown(Pages["Legit"], "Hitbox", {"Head", "Body"}, function() return Settings.Legit.hitbox end, function(v) Settings.Legit.hitbox = v end)
+    
+    -- RAGE PAGE
+    MakeToggle(Pages["Rage"], "Silent Aim", function() return Settings.Rage.silent end, function(v) Settings.Rage.silent = v end)
+    MakeSlider(Pages["Rage"], "Silent FOV", 30, 500, function() return Settings.Rage.fov end, function(v) Settings.Rage.fov = v end)
+    MakeToggle(Pages["Rage"], "Draw Silent FOV", function() return Settings.Rage.drawFov end, function(v) Settings.Rage.drawFov = v end)
+    
+    -- VISUALS PAGE
+    MakeToggle(Pages["Visuals"], "ESP Master", function() return Settings.Visuals.esp end, function(v) Settings.Visuals.esp = v end)
+    MakeToggle(Pages["Visuals"], "Box ESP", function() return Settings.Visuals.box end, function(v) Settings.Visuals.box = v end)
+    MakeToggle(Pages["Visuals"], "Name Tags", function() return Settings.Visuals.name end, function(v) Settings.Visuals.name = v end)
+    MakeToggle(Pages["Visuals"], "Health Bar", function() return Settings.Visuals.health end, function(v) Settings.Visuals.health = v end)
+    MakeToggle(Pages["Visuals"], "Chams", function() return Settings.Visuals.chams end, function(v) Settings.Visuals.chams = v end)
+    
+    -- MISC PAGE
+    MakeToggle(Pages["Misc"], "Fly Mode", function() return Settings.Misc.fly end, function(v) Settings.Misc.fly = v end)
+    MakeToggle(Pages["Misc"], "Noclip", function() return Settings.Misc.noclip end, function(v) Settings.Misc.noclip = v end)
+    MakeSlider(Pages["Misc"], "Fly Speed", 10, 120, function() return Settings.Misc.speed end, function(v) Settings.Misc.speed = v end)
+    
+    -- CONFIG PAGE
+    local SaveBtn = Instance.new("TextButton", Pages["Config"])
+    SaveBtn.Size = UDim2.new(1, 0, 0, 38)
+    SaveBtn.BackgroundColor3 = Color3.fromRGB(25, 28, 40)
+    SaveBtn.BorderSizePixel = 1
+    SaveBtn.BorderColor3 = Color3.fromRGB(45, 50, 65)
+    SaveBtn.Text = "💾 SAVE CONFIG"
+    SaveBtn.TextColor3 = Color3.fromRGB(80, 255, 120)
+    SaveBtn.TextSize = 13
+    SaveBtn.Font = Enum.Font.SourceSansBold
+    Instance.new("UICorner", SaveBtn).CornerRadius = UDim.new(0, 4)
+    SaveBtn.MouseButton1Click:Connect(SaveConfig)
+    
+    local LoadBtn = Instance.new("TextButton", Pages["Config"])
+    LoadBtn.Size = UDim2.new(1, 0, 0, 38)
+    LoadBtn.Position = UDim2.new(0, 0, 0, 46)
+    LoadBtn.BackgroundColor3 = Color3.fromRGB(25, 28, 40)
+    LoadBtn.BorderSizePixel = 1
+    LoadBtn.BorderColor3 = Color3.fromRGB(45, 50, 65)
+    LoadBtn.Text = "📂 LOAD CONFIG"
+    LoadBtn.TextColor3 = Color3.fromRGB(200, 50, 50)
+    LoadBtn.TextSize = 13
+    LoadBtn.Font = Enum.Font.SourceSansBold
+    Instance.new("UICorner", LoadBtn).CornerRadius = UDim.new(0, 4)
+    LoadBtn.MouseButton1Click:Connect(LoadConfig)
+    
+    local UnloadBtn = Instance.new("TextButton", Pages["Config"])
+    UnloadBtn.Size = UDim2.new(1, 0, 0, 38)
+    UnloadBtn.Position = UDim2.new(0, 0, 0, 92)
+    UnloadBtn.BackgroundColor3 = Color3.fromRGB(25, 28, 40)
+    UnloadBtn.BorderSizePixel = 1
+    UnloadBtn.BorderColor3 = Color3.fromRGB(200, 50, 50)
+    UnloadBtn.Text = "⚠️ UNLOAD (END) ⚠️"
+    UnloadBtn.TextColor3 = Color3.fromRGB(200, 50, 50)
+    UnloadBtn.TextSize = 13
+    UnloadBtn.Font = Enum.Font.SourceSansBold
+    Instance.new("UICorner", UnloadBtn).CornerRadius = UDim.new(0, 4)
+    UnloadBtn.MouseButton1Click:Connect(function()
+        for _, conn in pairs(connections) do pcall(conn.Disconnect) end
+        pcall(function() if MenuGui then MenuGui:Destroy() end end)
+        pcall(function() if espFolder then espFolder:Destroy() end end)
+        pcall(function() if HUD then HUD:Destroy() end end)
+        pcall(function() LegitFOV:Remove() end)
+        pcall(function() RageFOV:Remove() end)
+        ClearESP()
     end)
-
-    -- Close button
-    closeButton.MouseButton1Click:Connect(function()
-        screenGui:Destroy()
-    end)
-
-    updateToggleAppearance()
 end
 
--- ========== ЗАПУСК ==========
+-- ========== ЗАПУСК ЧИТА ==========
+local function StartCheat()
+    CreateMenu()
+    SetupFly()
+    SetupNoclip()
+    
+    table.insert(connections, RunService.RenderStepped:Connect(function()
+        UpdateESP()
+        UpdateHUD()
+        
+        LegitFOV.Visible = Settings.Legit.drawFov
+        LegitFOV.Radius = Settings.Legit.fov
+        LegitFOV.Position = Vector2.new(Mouse.X, Mouse.Y + 36)
+        
+        RageFOV.Visible = Settings.Rage.drawFov
+        RageFOV.Radius = Settings.Rage.fov
+        RageFOV.Position = Vector2.new(Mouse.X, Mouse.Y + 36)
+        
+        if Settings.Legit.aimbot and UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton2) then
+            local target = GetTarget(Settings.Legit.fov, Settings.Legit.hitbox)
+            if target then
+                Camera.CFrame = Camera.CFrame:Lerp(CFrame.new(Camera.CFrame.Position, target.Position), 1 / (Settings.Legit.smooth + 1))
+            end
+        end
+        
+        if Settings.Legit.trigger and Mouse.Target then
+            local plr = Players:GetPlayerFromCharacter(Mouse.Target.Parent)
+            if plr and plr ~= LocalPlayer then
+                VirtualInputManager:SendMouseButtonEvent(0, 0, 0, true, game, 0)
+                task.wait(0.02)
+                VirtualInputManager:SendMouseButtonEvent(0, 0, 0, false, game, 0)
+            end
+        end
+    end))
+    
+    UserInputService.InputBegan:Connect(function(input)
+        if input.KeyCode == Enum.KeyCode.Insert then
+            if MenuFrame then MenuFrame.Visible = not MenuFrame.Visible end
+        elseif input.KeyCode == Enum.KeyCode.End then
+            for _, conn in pairs(connections) do pcall(conn.Disconnect) end
+            pcall(function() if MenuGui then MenuGui:Destroy() end end)
+            pcall(function() if espFolder then espFolder:Destroy() end end)
+            pcall(function() if HUD then HUD:Destroy() end end)
+            pcall(function() LegitFOV:Remove() end)
+            pcall(function() RageFOV:Remove() end)
+            ClearESP()
+        end
+    end)
+    
+    print("=== SQUADRIM DLC | ImGUI STYLE | ЗАПУЩЕН ===")
+    print("Insert = Меню | End = Выгрузка")
+end
+
 ShowAuth()
