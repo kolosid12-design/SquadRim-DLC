@@ -1,4 +1,4 @@
--- SWILL | SquadRim DLC PRO | v15.0 | ImGUI STYLE
+-- SWILL | SquadRim DLC PRO | v15.1 | ПОЛНОЕ МЕНЮ
 -- Telegram: t.me/squadrim1
 -- Insert = Меню | F7 = FreeCam | End = UNLOAD
 
@@ -12,9 +12,6 @@ local CoreGui = game:GetService("CoreGui")
 local VirtualInputManager = game:GetService("VirtualInputManager")
 local Workspace = game:GetService("Workspace")
 local HttpService = game:GetService("HttpService")
-local TweenService = game:GetService("TweenService")
-local Lighting = game:GetService("Lighting")
-local GuiService = game:GetService("GuiService")
 
 -- ========== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ==========
 local function CopyToClipboard(text)
@@ -33,40 +30,19 @@ local function ShowNotification(text, isError)
     notification.TextColor3 = isError and Color3.fromRGB(255, 80, 80) or Color3.fromRGB(80, 255, 80)
     notification.TextSize = 14
     notification.Font = Enum.Font.SourceSansBold
-    notification.ZIndex = 1000
     notification.Parent = CoreGui
     Instance.new("UICorner", notification).CornerRadius = UDim.new(0, 6)
-    task.delay(2.5, notification.Destroy)
+    task.delay(2.5, function() notification:Destroy() end)
 end
 
--- ========== ПЕРЕМЕННЫЕ СОСТОЯНИЯ ==========
+-- ========== ПЕРЕМЕННЫЕ ==========
 local state = {
     menu = true,
     version = "0.7",
-    build = "0.7",
-    theme = "dark",
-    fps = 60,
-    ping = 18,
-    tick = 64,
-    rage = {enabled = true, autofire = true, doubletap = false, hideshots = false, hitchance = 60, multipoint = 3},
-    legit = {enabled = true, silent = false, autoshoot = true, fov = 8, smooth = 45, hitbox = "Head"},
-    trigger = {enabled = true, scopeonly = false, allies = true, delaymin = 40, delaymax = 90},
-    rcs = {enabled = true, pitch = 80, yaw = 75},
-    movement = {fakeduck = false, slowwalk = true, edgejump = false},
-    accuracy = {nospread = true, norecoil = false, autopistol = true},
-    visuals = {
-        enabled = true, box = true, skeleton = false, name = true,
-        health = true, armour = false, boxstyle = "Corner Box",
-        enemycolor = Color3.fromRGB(232, 48, 48),
-        teamcolor = Color3.fromRGB(79, 255, 176),
-        weapons = true, grenades = false, bomb = true, footsteps = true,
-        chams = true, xqz = false, chamsmaterial = "Flat",
-        chamscolor = Color3.fromRGB(232, 48, 48),
-        radar = true, radarmode = "Custom radar", radscale = 1.4
-    },
-    misc = {bhop = true, autostrafe = false, edgejump = false, crouchjump = true, bhmode = "Perfect", bhrate = 95, noflash = true, nosmoke = true, clantag = false, freecam = false, fly = false, noclip = false},
-    skin = {knifemodel = "Butterfly Knife", kniveskin = "Fade FN", gloves = "Sport Gloves", applyall = true},
-    config = {active = "HvH_Preset_v3", autosave = true, cloud = false}
+    legit = {aimbot = false, silent = false, autoshoot = true, fov = 8, smooth = 45, hitbox = "Head"},
+    trigger = {enabled = false, delaymin = 40, delaymax = 90},
+    visuals = {enabled = true, box = true, name = true, health = true, chams = false},
+    misc = {bhop = false, freecam = false, fly = false, noclip = false}
 }
 
 local connections = {}
@@ -79,26 +55,7 @@ local lookSensitivity = 0.5
 local moveState = {forward = 0, backward = 0, left = 0, right = 0, up = 0, down = 0}
 local freecamBodyVelocity = nil
 
--- ========== FPS КАЛЬКУЛЯТОР ==========
-local fpsValues = {}
-local function UpdateFPS()
-    local fps = math.floor(1 / RunService.RenderStepped:Wait())
-    table.insert(fpsValues, fps)
-    if #fpsValues > 10 then table.remove(fpsValues, 1) end
-    local sum = 0
-    for _, v in ipairs(fpsValues) do sum = sum + v end
-    state.fps = math.floor(sum / #fpsValues)
-end
-
--- ========== FOV КРУГ ==========
-local FOVCircle = Drawing.new("Circle")
-FOVCircle.Thickness = 2
-FOVCircle.Color = Color3.fromRGB(232, 48, 48)
-FOVCircle.Filled = false
-FOVCircle.Visible = false
-FOVCircle.Transparency = 0.4
-
--- ========== ESP STORAGE ==========
+-- ========== ESP ==========
 local Storage = {}
 local espFolder = Instance.new("Folder", CoreGui)
 espFolder.Name = "SquadRim_ESP"
@@ -119,11 +76,7 @@ local function Create(class, props)
 end
 
 local function UpdateESP()
-    if isFreeCam then return end
-    if not state.visuals.enabled then
-        for _, player in pairs(Players:GetPlayers()) do Clean(player) end
-        return
-    end
+    if isFreeCam or not state.visuals.enabled then return end
     
     for _, player in pairs(Players:GetPlayers()) do
         if player == LocalPlayer then continue end
@@ -136,7 +89,7 @@ local function UpdateESP()
             if onScreen then
                 if not Storage[player] then
                     Storage[player] = {
-                        Box = Create("Square", {Thickness = 1, Filled = false, Transparency = 1, Color = state.visuals.enemycolor}),
+                        Box = Create("Square", {Thickness = 1, Filled = false, Transparency = 1, Color = Color3.new(1,0,0)}),
                         Name = Create("Text", {Size = 14, Center = true, Outline = true, Color = Color3.new(1,1,1)}),
                         Dist = Create("Text", {Size = 13, Center = true, Outline = true, Color = Color3.new(0.8,0.8,0.8)}),
                         HealthBar = Create("Square", {Thickness = 1, Filled = true, Transparency = 0.7}),
@@ -155,7 +108,6 @@ local function UpdateESP()
                 s.Box.Visible = state.visuals.box
                 s.Box.Position = Vector2.new(x, y)
                 s.Box.Size = Vector2.new(sizeX, sizeY)
-                s.Box.Color = state.visuals.enemycolor
                 
                 s.Name.Visible = state.visuals.name
                 s.Name.Position = Vector2.new(pos.X, y - 16)
@@ -173,8 +125,6 @@ local function UpdateESP()
                 s.Highlight.Enabled = state.visuals.chams
                 s.Highlight.Adornee = char
                 s.Highlight.FillTransparency = 0.5
-                s.Highlight.OutlineTransparency = 0
-                s.Highlight.FillColor = state.visuals.chamscolor
             else
                 Clean(player)
             end
@@ -194,7 +144,7 @@ local function GetClosestPlayer()
     
     for _, plr in ipairs(Players:GetPlayers()) do
         if plr ~= LocalPlayer and plr.Character then
-            local part = (state.legit.hitbox == "Head" and plr.Character:FindFirstChild("Head")) or plr.Character:FindFirstChild("HumanoidRootPart")
+            local part = plr.Character:FindFirstChild(state.legit.hitbox == "Head" and "Head" or "HumanoidRootPart")
             local hum = plr.Character:FindFirstChild("Humanoid")
             if part and hum and hum.Health > 0 then
                 local screenPos, onScreen = Camera:WorldToViewportPoint(part.Position)
@@ -221,7 +171,7 @@ pcall(function()
             if state.legit.silent and self == Mouse and key == "Hit" then
                 local target = GetClosestPlayer()
                 if target and target.Character then
-                    local part = (state.legit.hitbox == "Head" and target.Character:FindFirstChild("Head")) or target.Character:FindFirstChild("HumanoidRootPart")
+                    local part = target.Character:FindFirstChild(state.legit.hitbox == "Head" and "Head" or "HumanoidRootPart")
                     if part then return part.CFrame end
                 end
             end
@@ -234,15 +184,12 @@ end)
 -- Legit Aimbot
 local function SetupLegitAimbot()
     table.insert(connections, RunService.RenderStepped:Connect(function()
-        if state.legit.enabled and (state.legit.silent or (UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton2) and state.legit.autoshoot)) then
+        if state.legit.aimbot and (state.legit.silent or UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton2)) then
             local target = GetClosestPlayer()
             if target and target.Character then
-                local part = (state.legit.hitbox == "Head" and target.Character:FindFirstChild("Head")) or target.Character:FindFirstChild("HumanoidRootPart")
+                local part = target.Character:FindFirstChild(state.legit.hitbox == "Head" and "Head" or "HumanoidRootPart")
                 if part then
-                    local targetPos = part.Position
-                    local currentCF = Camera.CFrame
-                    local newCF = CFrame.new(currentCF.Position, targetPos)
-                    Camera.CFrame = currentCF:Lerp(newCF, state.legit.smooth / 100)
+                    Camera.CFrame = Camera.CFrame:Lerp(CFrame.new(Camera.CFrame.Position, part.Position), state.legit.smooth / 100)
                 end
             end
         end
@@ -262,21 +209,6 @@ local function SetupTriggerbot()
         end
     end))
 end
-
--- No Recoil / No Spread
-pcall(function()
-    local mt = getrawmetatable(game)
-    if mt then
-        local oldIndex = mt.__index
-        setreadonly(mt, false)
-        mt.__index = function(self, key)
-            if state.accuracy.norecoil and (key == "Recoil" or key == "CameraRecoil") then return 0 end
-            if state.accuracy.nospread and key == "Spread" then return 0 end
-            return oldIndex(self, key)
-        end
-        setreadonly(mt, true)
-    end
-end)
 
 -- ========== FREECAM ==========
 local function toggleFreeCam()
@@ -385,7 +317,7 @@ local function SetupNoclip()
     end))
 end
 
--- ========== BUNNY HOP ==========
+-- ========== BHOP ==========
 local function SetupBHop()
     table.insert(connections, RunService.RenderStepped:Connect(function()
         if state.misc.bhop and LocalPlayer.Character then
@@ -399,28 +331,19 @@ end
 
 -- ========== CONFIG ==========
 local function SaveConfig()
-    local cfg = {
-        rage = state.rage, legit = state.legit, trigger = state.trigger, rcs = state.rcs,
-        movement = state.movement, accuracy = state.accuracy, visuals = state.visuals,
-        misc = state.misc, skin = state.skin, config = state.config
-    }
-    writefile("SquadRim_Config.json", HttpService:JSONEncode(cfg))
+    writefile("SquadRim_Config.json", HttpService:JSONEncode({
+        legit = state.legit, trigger = state.trigger, visuals = state.visuals, misc = state.misc
+    }))
     ShowNotification("Config saved", false)
 end
 
 local function LoadConfig()
     if isfile("SquadRim_Config.json") then
         local data = HttpService:JSONDecode(readfile("SquadRim_Config.json"))
-        state.rage = data.rage or state.rage
         state.legit = data.legit or state.legit
         state.trigger = data.trigger or state.trigger
-        state.rcs = data.rcs or state.rcs
-        state.movement = data.movement or state.movement
-        state.accuracy = data.accuracy or state.accuracy
         state.visuals = data.visuals or state.visuals
         state.misc = data.misc or state.misc
-        state.skin = data.skin or state.skin
-        state.config = data.config or state.config
         ShowNotification("Config loaded", false)
     end
 end
@@ -440,10 +363,9 @@ local function UnloadCheat()
         Camera.CameraType = Enum.CameraType.Custom
         UserInputService.MouseBehavior = Enum.MouseBehavior.Default
     end
-    print("SquadRim DLC UNLOADED")
 end
 
--- ========== СТАТУС HUD ==========
+-- ========== HUD ==========
 local HUD = Instance.new("TextLabel")
 HUD.Size = UDim2.new(0, 450, 0, 22)
 HUD.Position = UDim2.new(0.5, -225, 0.01, 0)
@@ -457,323 +379,43 @@ HUD.Font = Enum.Font.SourceSansBold
 HUD.Parent = CoreGui
 Instance.new("UICorner", HUD).CornerRadius = UDim.new(0, 4)
 
-local function UpdateHUD()
-    UpdateFPS()
-    local ping = math.random(15, 35)
-    HUD.Text = string.format("| t.me/squadrim1 | DLC | FREE | %s | %d FPS | PING %dms |", LocalPlayer.Name, state.fps, ping)
+local fpsValues = {}
+local function UpdateFPS()
+    local fps = math.floor(1 / RunService.RenderStepped:Wait())
+    table.insert(fpsValues, fps)
+    if #fpsValues > 10 then table.remove(fpsValues, 1) end
+    local sum = 0
+    for _, v in ipairs(fpsValues) do sum = sum + v end
+    return math.floor(sum / #fpsValues)
 end
 
--- ========== ImGUI МЕНЮ ==========
+local function UpdateHUD()
+    local fps = UpdateFPS()
+    HUD.Text = string.format("| t.me/squadrim1 | DLC | FREE | %s | %d FPS |", LocalPlayer.Name, fps)
+end
+
+-- ========== FOV КРУГ ==========
+local FOVCircle = Drawing.new("Circle")
+FOVCircle.Thickness = 2
+FOVCircle.Color = Color3.fromRGB(232, 48, 48)
+FOVCircle.Filled = false
+FOVCircle.Visible = false
+FOVCircle.Transparency = 0.4
+
+-- ========== СОЗДАНИЕ ГЛАВНОГО МЕНЮ ==========
 local screenGui = nil
 local MainFrame = nil
 local currentTab = "legit"
 
-local function CreateToggle(x, y, w, h, getter, setter)
-    local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(0, w, 0, h)
-    btn.Position = UDim2.new(0, x, 0, y)
-    btn.BackgroundColor3 = getter() and Color3.fromRGB(232, 48, 48) or Color3.fromRGB(25, 25, 35)
-    btn.BorderSizePixel = 1
-    btn.BorderColor3 = Color3.fromRGB(45, 45, 55)
-    btn.Text = getter() and "ON" or "OFF"
-    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    btn.TextSize = 11
-    btn.Font = Enum.Font.SourceSansBold
-    btn.Parent = MainFrame
-    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 3)
-    btn.MouseButton1Click:Connect(function()
-        local newVal = not getter()
-        setter(newVal)
-        btn.BackgroundColor3 = newVal and Color3.fromRGB(232, 48, 48) or Color3.fromRGB(25, 25, 35)
-        btn.Text = newVal and "ON" or "OFF"
-    end)
-    return btn
-end
-
-local function CreateSlider(x, y, w, text, min, max, getter, setter)
-    local frame = Instance.new("Frame")
-    frame.Size = UDim2.new(0, w, 0, 35)
-    frame.Position = UDim2.new(0, x, 0, y)
-    frame.BackgroundTransparency = 1
-    frame.Parent = MainFrame
-    
-    local label = Instance.new("TextLabel")
-    label.Size = UDim2.new(1, 0, 0, 16)
-    label.BackgroundTransparency = 1
-    label.Text = text .. ": " .. getter()
-    label.TextColor3 = Color3.fromRGB(184, 196, 212)
-    label.TextSize = 11
-    label.Font = Enum.Font.SourceSans
-    label.Parent = frame
-    
-    local track = Instance.new("Frame")
-    track.Size = UDim2.new(1, 0, 0, 3)
-    track.Position = UDim2.new(0, 0, 0, 22)
-    track.BackgroundColor3 = Color3.fromRGB(30, 36, 47)
-    track.BorderSizePixel = 0
-    track.Parent = frame
-    
-    local fill = Instance.new("Frame")
-    fill.Size = UDim2.new((getter() - min) / (max - min), 0, 1, 0)
-    fill.BackgroundColor3 = Color3.fromRGB(232, 48, 48)
-    fill.BorderSizePixel = 0
-    fill.Parent = track
-    
-    local knob = Instance.new("Frame")
-    knob.Size = UDim2.new(0, 8, 0, 8)
-    knob.Position = UDim2.new((getter() - min) / (max - min), -4, 0, -2.5)
-    knob.BackgroundColor3 = Color3.fromRGB(232, 48, 48)
-    knob.BorderSizePixel = 1
-    knob.BorderColor3 = Color3.fromRGB(255, 255, 255)
-    knob.Parent = track
-    Instance.new("UICorner", knob).CornerRadius = UDim.new(1, 0)
-    
-    local dragging = false
-    track.InputBegan:Connect(function(i)
-        if i.UserInputType == Enum.UserInputType.MouseButton1 then
-            dragging = true
-            local percent = math.clamp((Mouse.X - track.AbsolutePosition.X) / track.AbsoluteSize.X, 0, 1)
-            local val = math.floor(min + (max - min) * percent)
-            setter(val)
-            fill.Size = UDim2.new(percent, 0, 1, 0)
-            knob.Position = UDim2.new(percent, -4, 0, -2.5)
-            label.Text = text .. ": " .. val
-        end
-    end)
-    track.InputEnded:Connect(function() dragging = false end)
-    UserInputService.InputChanged:Connect(function(i)
-        if dragging and i.UserInputType == Enum.UserInputType.MouseMovement then
-            local percent = math.clamp((Mouse.X - track.AbsolutePosition.X) / track.AbsoluteSize.X, 0, 1)
-            local val = math.floor(min + (max - min) * percent)
-            setter(val)
-            fill.Size = UDim2.new(percent, 0, 1, 0)
-            knob.Position = UDim2.new(percent, -4, 0, -2.5)
-            label.Text = text .. ": " .. val
-        end
-    end)
-end
-
-local function CreateDropdown(x, y, w, text, options, getter, setter)
-    local frame = Instance.new("Frame")
-    frame.Size = UDim2.new(0, w, 0, 45)
-    frame.Position = UDim2.new(0, x, 0, y)
-    frame.BackgroundTransparency = 1
-    frame.Parent = MainFrame
-    
-    local label = Instance.new("TextLabel")
-    label.Size = UDim2.new(1, 0, 0, 16)
-    label.BackgroundTransparency = 1
-    label.Text = text
-    label.TextColor3 = Color3.fromRGB(106, 122, 148)
-    label.TextSize = 10
-    label.Font = Enum.Font.SourceSans
-    label.Parent = frame
-    
-    local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(1, 0, 0, 24)
-    btn.Position = UDim2.new(0, 0, 0, 20)
-    btn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
-    btn.BorderSizePixel = 1
-    btn.BorderColor3 = Color3.fromRGB(45, 45, 55)
-    btn.Text = getter()
-    btn.TextColor3 = Color3.fromRGB(232, 48, 48)
-    btn.TextSize = 11
-    btn.Font = Enum.Font.SourceSansBold
-    btn.Parent = frame
-    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 3)
-    
-    local open = false
-    local dropdown = nil
-    btn.MouseButton1Click:Connect(function()
-        if open and dropdown then dropdown:Destroy() end
-        open = true
-        dropdown = Instance.new("Frame")
-        dropdown.Size = UDim2.new(1, 0, 0, 24 * #options)
-        dropdown.Position = UDim2.new(0, 0, 0, 24)
-        dropdown.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
-        dropdown.BorderSizePixel = 1
-        dropdown.BorderColor3 = Color3.fromRGB(45, 45, 55)
-        dropdown.Parent = frame
-        Instance.new("UICorner", dropdown).CornerRadius = UDim.new(0, 3)
-        
-        for i, opt in ipairs(options) do
-            local optBtn = Instance.new("TextButton")
-            optBtn.Size = UDim2.new(1, 0, 0, 24)
-            optBtn.Position = UDim2.new(0, 0, 0, 24 * (i-1))
-            optBtn.BackgroundColor3 = Color3.fromRGB(30, 30, 42)
-            optBtn.Text = opt
-            optBtn.TextColor3 = Color3.fromRGB(184, 196, 212)
-            optBtn.TextSize = 11
-            optBtn.Font = Enum.Font.SourceSans
-            optBtn.Parent = dropdown
-            optBtn.MouseButton1Click:Connect(function()
-                setter(opt)
-                btn.Text = opt
-                dropdown:Destroy()
-                open = false
-            end)
-        end
-    end)
-end
-
-local function CreateColorPicker(x, y, w, text, getter, setter)
-    local frame = Instance.new("Frame")
-    frame.Size = UDim2.new(0, w, 0, 55)
-    frame.Position = UDim2.new(0, x, 0, y)
-    frame.BackgroundTransparency = 1
-    frame.Parent = MainFrame
-    
-    local label = Instance.new("TextLabel")
-    label.Size = UDim2.new(1, 0, 0, 16)
-    label.BackgroundTransparency = 1
-    label.Text = text
-    label.TextColor3 = Color3.fromRGB(106, 122, 148)
-    label.TextSize = 10
-    label.Font = Enum.Font.SourceSans
-    label.Parent = frame
-    
-    local colors = {
-        {Color3.fromRGB(232, 48, 48), "#E83030"},
-        {Color3.fromRGB(255, 136, 0), "#FF8800"},
-        {Color3.fromRGB(79, 255, 176), "#4FFFB0"},
-        {Color3.fromRGB(124, 110, 255), "#7C6EFF"},
-        {Color3.fromRGB(255, 255, 255), "#FFFFFF"}
-    }
-    
-    local swatchFrame = Instance.new("Frame")
-    swatchFrame.Size = UDim2.new(1, 0, 0, 18)
-    swatchFrame.Position = UDim2.new(0, 0, 0, 20)
-    swatchFrame.BackgroundTransparency = 1
-    swatchFrame.Parent = frame
-    
-    for i, col in ipairs(colors) do
-        local sw = Instance.new("TextButton")
-        sw.Size = UDim2.new(0, 18, 0, 18)
-        sw.Position = UDim2.new(0, (i-1) * 22, 0, 0)
-        sw.BackgroundColor3 = col[1]
-        sw.BorderSizePixel = 1
-        sw.BorderColor3 = getter() == col[1] and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(45, 45, 55)
-        sw.Text = ""
-        sw.Parent = swatchFrame
-        Instance.new("UICorner", sw).CornerRadius = UDim.new(0, 3)
-        sw.MouseButton1Click:Connect(function()
-            setter(col[1])
-            for _, child in pairs(swatchFrame:GetChildren()) do
-                if child:IsA("TextButton") then
-                    child.BorderColor3 = Color3.fromRGB(45, 45, 55)
-                end
-            end
-            sw.BorderColor3 = Color3.fromRGB(255, 255, 255)
-        end)
-    end
-    
-    local hexLabel = Instance.new("TextLabel")
-    hexLabel.Size = UDim2.new(1, 0, 0, 16)
-    hexLabel.Position = UDim2.new(0, 0, 0, 42)
-    hexLabel.BackgroundTransparency = 1
-    hexLabel.Text = "#FFFFFF  A:255"
-    hexLabel.TextColor3 = Color3.fromRGB(58, 69, 88)
-    hexLabel.TextSize = 10
-    hexLabel.Font = Enum.Font.ShareTechMono
-    hexLabel.Parent = frame
-end
-
-local function CreateKeybind(x, y, w, text, getter, setter)
-    local frame = Instance.new("Frame")
-    frame.Size = UDim2.new(0, w, 0, 32)
-    frame.Position = UDim2.new(0, x, 0, y)
-    frame.BackgroundTransparency = 1
-    frame.Parent = MainFrame
-    
-    local label = Instance.new("TextLabel")
-    label.Size = UDim2.new(0.6, 0, 1, 0)
-    label.BackgroundTransparency = 1
-    label.Text = text
-    label.TextColor3 = Color3.fromRGB(106, 122, 148)
-    label.TextSize = 11
-    label.Font = Enum.Font.SourceSans
-    label.TextXAlignment = Enum.TextXAlignment.Left
-    label.Parent = frame
-    
-    local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(0, 50, 0, 22)
-    btn.Position = UDim2.new(0.7, 0, 0.15, 0)
-    btn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
-    btn.BorderSizePixel = 1
-    btn.BorderColor3 = Color3.fromRGB(45, 45, 55)
-    btn.Text = getter() or "NONE"
-    btn.TextColor3 = Color3.fromRGB(232, 48, 48)
-    btn.TextSize = 10
-    btn.Font = Enum.Font.ShareTechMono
-    btn.Parent = frame
-    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 3)
-    
-    btn.MouseButton1Click:Connect(function()
-        btn.Text = "..."
-        local input
-        input = UserInputService.InputBegan:Connect(function(i)
-            if i.KeyType == Enum.KeyType.Key then
-                setter(i.KeyCode.Name)
-                btn.Text = i.KeyCode.Name
-                input:Disconnect()
-            end
-        end)
-    end)
-end
-
-local function CreateGroup(x, y, w, h, title)
-    local group = Instance.new("Frame")
-    group.Size = UDim2.new(0, w, 0, h)
-    group.Position = UDim2.new(0, x, 0, y)
-    group.BackgroundColor3 = Color3.fromRGB(14, 17, 20)
-    group.BorderSizePixel = 1
-    group.BorderColor3 = Color3.fromRGB(30, 36, 47)
-    group.Parent = MainFrame
-    Instance.new("UICorner", group).CornerRadius = UDim.new(0, 4)
-    
-    local titleFrame = Instance.new("Frame")
-    titleFrame.Size = UDim2.new(1, 0, 0, 26)
-    titleFrame.BackgroundColor3 = Color3.fromRGB(19, 23, 32)
-    titleFrame.BorderSizePixel = 1
-    titleFrame.BorderColor3 = Color3.fromRGB(30, 36, 47)
-    titleFrame.Parent = group
-    
-    local titleLabel = Instance.new("TextLabel")
-    titleLabel.Size = UDim2.new(1, -10, 1, 0)
-    titleLabel.Position = UDim2.new(0, 8, 0, 0)
-    titleLabel.BackgroundTransparency = 1
-    titleLabel.Text = title
-    titleLabel.TextColor3 = Color3.fromRGB(232, 48, 48)
-    titleLabel.TextSize = 11
-    titleLabel.Font = Enum.Font.SourceSansBold
-    titleLabel.TextXAlignment = Enum.TextXAlignment.Left
-    titleLabel.Parent = titleFrame
-    
-    local badge = Instance.new("TextLabel")
-    badge.Size = UDim2.new(0, 40, 0, 16)
-    badge.Position = UDim2.new(1, -48, 0, 5)
-    badge.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
-    badge.BorderSizePixel = 0
-    badge.Text = "ON"
-    badge.TextColor3 = Color3.fromRGB(232, 48, 48)
-    badge.TextSize = 9
-    badge.Font = Enum.Font.SourceSansBold
-    badge.Parent = titleFrame
-    Instance.new("UICorner", badge).CornerRadius = UDim.new(0, 2)
-    
-    return group, badge
-end
-
--- ========== СОЗДАНИЕ GUI ==========
 local function CreateGUI()
     screenGui = Instance.new("ScreenGui")
-    screenGui.Name = "SquadRim_ImGUI"
+    screenGui.Name = "SquadRim_Menu"
     screenGui.Parent = CoreGui
     screenGui.ResetOnSpawn = false
     
     MainFrame = Instance.new("Frame")
-    MainFrame.Size = UDim2.new(0, 600, 0, 520)
-    MainFrame.Position = UDim2.new(0.5, -300, 0.5, -260)
+    MainFrame.Size = UDim2.new(0, 600, 0, 480)
+    MainFrame.Position = UDim2.new(0.5, -300, 0.5, -240)
     MainFrame.BackgroundColor3 = Color3.fromRGB(8, 10, 12)
     MainFrame.BorderSizePixel = 1
     MainFrame.BorderColor3 = Color3.fromRGB(232, 48, 48)
@@ -802,10 +444,10 @@ local function CreateGUI()
     logo.Parent = header
     
     local ver = Instance.new("TextLabel")
-    ver.Size = UDim2.new(0, 100, 0, 14)
+    ver.Size = UDim2.new(0, 150, 0, 14)
     ver.Position = UDim2.new(0, 12, 0, 28)
     ver.BackgroundTransparency = 1
-    ver.Text = "BUILD " .. state.build .. " — ROBLOX"
+    ver.Text = "BUILD 0.7 — ROBLOX"
     ver.TextColor3 = Color3.fromRGB(58, 69, 88)
     ver.TextSize = 9
     ver.Font = Enum.Font.ShareTechMono
@@ -855,19 +497,18 @@ local function CreateGUI()
     tabBar.BorderColor3 = Color3.fromRGB(30, 36, 47)
     tabBar.Parent = MainFrame
     
-    local tabs = {
+    local tabsData = {
         {name = "LEGIT", id = "legit", x = 0},
-        {name = "RAGE", id = "rage", x = 120},
-        {name = "VISUAL", id = "visual", x = 240},
-        {name = "MISC", id = "misc", x = 360},
-        {name = "SKINS", id = "skins", x = 480}
+        {name = "VISUAL", id = "visual", x = 150},
+        {name = "MISC", id = "misc", x = 300},
+        {name = "CONFIG", id = "config", x = 450}
     }
     
     local containers = {}
     
-    for _, tab in ipairs(tabs) do
+    for _, tab in ipairs(tabsData) do
         local btn = Instance.new("TextButton")
-        btn.Size = UDim2.new(0, 120, 1, 0)
+        btn.Size = UDim2.new(0, 150, 1, 0)
         btn.Position = UDim2.new(0, tab.x, 0, 0)
         btn.BackgroundColor3 = tab.id == currentTab and Color3.fromRGB(232, 48, 48) or Color3.fromRGB(8, 10, 12)
         btn.BorderSizePixel = 0
@@ -877,17 +518,25 @@ local function CreateGUI()
         btn.Font = Enum.Font.SourceSansBold
         btn.Parent = tabBar
         
-        local container = Instance.new("Frame")
-        container.Size = UDim2.new(1, 0, 1, -78)
-        container.Position = UDim2.new(0, 0, 0, 78)
+        local container = Instance.new("ScrollingFrame")
+        container.Size = UDim2.new(1, -20, 1, -90)
+        container.Position = UDim2.new(0, 10, 0, 85)
         container.BackgroundTransparency = 1
         container.Visible = (tab.id == currentTab)
+        container.CanvasSize = UDim2.new(0, 0, 0, 400)
+        container.ScrollBarThickness = 4
         container.Parent = MainFrame
+        
+        local layout = Instance.new("UIListLayout")
+        layout.Padding = UDim.new(0, 10)
+        layout.SortOrder = Enum.SortOrder.LayoutOrder
+        layout.Parent = container
+        
         containers[tab.id] = container
         
         btn.MouseButton1Click:Connect(function()
             currentTab = tab.id
-            for _, t in pairs(tabs) do
+            for _, t in pairs(tabsData) do
                 local b = tabBar:FindFirstChild(t.name)
                 if b then b.BackgroundColor3 = Color3.fromRGB(8, 10, 12) end
                 if containers[t.id] then containers[t.id].Visible = (t.id == tab.id) end
@@ -896,200 +545,321 @@ local function CreateGUI()
         end)
     end
     
-    -- LEGIT TAB
+    local function CreateGroup(parent, title)
+        local group = Instance.new("Frame")
+        group.Size = UDim2.new(1, -20, 0, 0)
+        group.BackgroundColor3 = Color3.fromRGB(14, 17, 20)
+        group.BorderSizePixel = 1
+        group.BorderColor3 = Color3.fromRGB(30, 36, 47)
+        group.Parent = parent
+        Instance.new("UICorner", group).CornerRadius = UDim.new(0, 4)
+        
+        local titleFrame = Instance.new("Frame")
+        titleFrame.Size = UDim2.new(1, 0, 0, 26)
+        titleFrame.BackgroundColor3 = Color3.fromRGB(19, 23, 32)
+        titleFrame.BorderSizePixel = 1
+        titleFrame.BorderColor3 = Color3.fromRGB(30, 36, 47)
+        titleFrame.Parent = group
+        
+        local titleLabel = Instance.new("TextLabel")
+        titleLabel.Size = UDim2.new(1, -10, 1, 0)
+        titleLabel.Position = UDim2.new(0, 8, 0, 0)
+        titleLabel.BackgroundTransparency = 1
+        titleLabel.Text = title
+        titleLabel.TextColor3 = Color3.fromRGB(232, 48, 48)
+        titleLabel.TextSize = 11
+        titleLabel.Font = Enum.Font.SourceSansBold
+        titleLabel.TextXAlignment = Enum.TextXAlignment.Left
+        titleLabel.Parent = titleFrame
+        
+        local badge = Instance.new("TextLabel")
+        badge.Size = UDim2.new(0, 40, 0, 16)
+        badge.Position = UDim2.new(1, -48, 0, 5)
+        badge.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
+        badge.BorderSizePixel = 0
+        badge.Text = "OFF"
+        badge.TextColor3 = Color3.fromRGB(232, 48, 48)
+        badge.TextSize = 9
+        badge.Font = Enum.Font.SourceSansBold
+        badge.Parent = titleFrame
+        Instance.new("UICorner", badge).CornerRadius = UDim.new(0, 2)
+        
+        local body = Instance.new("Frame")
+        body.Size = UDim2.new(1, 0, 1, -26)
+        body.Position = UDim2.new(0, 0, 0, 26)
+        body.BackgroundTransparency = 1
+        body.Parent = group
+        
+        return group, body, badge
+    end
+    
+    local function MakeToggle(parent, text, getter, setter, badge)
+        local frame = Instance.new("Frame")
+        frame.Size = UDim2.new(1, 0, 0, 30)
+        frame.BackgroundTransparency = 1
+        frame.Parent = parent
+        
+        local label = Instance.new("TextLabel")
+        label.Size = UDim2.new(0.6, 0, 1, 0)
+        label.BackgroundTransparency = 1
+        label.Text = text
+        label.TextColor3 = Color3.fromRGB(184, 196, 212)
+        label.TextSize = 12
+        label.Font = Enum.Font.SourceSans
+        label.TextXAlignment = Enum.TextXAlignment.Left
+        label.Parent = frame
+        
+        local btn = Instance.new("TextButton")
+        btn.Size = UDim2.new(0, 55, 0, 24)
+        btn.Position = UDim2.new(0.85, 0, 0.1, 0)
+        btn.BackgroundColor3 = getter() and Color3.fromRGB(232, 48, 48) or Color3.fromRGB(25, 25, 35)
+        btn.BorderSizePixel = 1
+        btn.BorderColor3 = Color3.fromRGB(45, 45, 55)
+        btn.Text = getter() and "ON" or "OFF"
+        btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+        btn.TextSize = 11
+        btn.Font = Enum.Font.SourceSansBold
+        btn.Parent = frame
+        Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 3)
+        
+        btn.MouseButton1Click:Connect(function()
+            local newVal = not getter()
+            setter(newVal)
+            btn.BackgroundColor3 = newVal and Color3.fromRGB(232, 48, 48) or Color3.fromRGB(25, 25, 35)
+            btn.Text = newVal and "ON" or "OFF"
+            if badge then badge.Text = newVal and "ON" or "OFF" end
+        end)
+    end
+    
+    local function MakeSlider(parent, text, min, max, getter, setter)
+        local frame = Instance.new("Frame")
+        frame.Size = UDim2.new(1, 0, 0, 50)
+        frame.BackgroundTransparency = 1
+        frame.Parent = parent
+        
+        local label = Instance.new("TextLabel")
+        label.Size = UDim2.new(0.6, 0, 0, 20)
+        label.BackgroundTransparency = 1
+        label.Text = text
+        label.TextColor3 = Color3.fromRGB(184, 196, 212)
+        label.TextSize = 12
+        label.Font = Enum.Font.SourceSans
+        label.TextXAlignment = Enum.TextXAlignment.Left
+        label.Parent = frame
+        
+        local valueLabel = Instance.new("TextLabel")
+        valueLabel.Size = UDim2.new(0.3, 0, 0, 20)
+        valueLabel.Position = UDim2.new(0.7, 0, 0, 0)
+        valueLabel.BackgroundTransparency = 1
+        valueLabel.Text = tostring(getter())
+        valueLabel.TextColor3 = Color3.fromRGB(232, 48, 48)
+        valueLabel.TextSize = 12
+        valueLabel.Font = Enum.Font.ShareTechMono
+        valueLabel.TextXAlignment = Enum.TextXAlignment.Right
+        valueLabel.Parent = frame
+        
+        local track = Instance.new("Frame")
+        track.Size = UDim2.new(1, 0, 0, 3)
+        track.Position = UDim2.new(0, 0, 0, 28)
+        track.BackgroundColor3 = Color3.fromRGB(30, 36, 47)
+        track.BorderSizePixel = 0
+        track.Parent = frame
+        
+        local fill = Instance.new("Frame")
+        fill.Size = UDim2.new((getter() - min) / (max - min), 0, 1, 0)
+        fill.BackgroundColor3 = Color3.fromRGB(232, 48, 48)
+        fill.BorderSizePixel = 0
+        fill.Parent = track
+        
+        local knob = Instance.new("Frame")
+        knob.Size = UDim2.new(0, 10, 0, 10)
+        knob.Position = UDim2.new((getter() - min) / (max - min), -5, 0, -3.5)
+        knob.BackgroundColor3 = Color3.fromRGB(232, 48, 48)
+        knob.BorderSizePixel = 1
+        knob.BorderColor3 = Color3.fromRGB(255, 255, 255)
+        knob.Parent = track
+        Instance.new("UICorner", knob).CornerRadius = UDim.new(1, 0)
+        
+        local dragging = false
+        track.InputBegan:Connect(function(i)
+            if i.UserInputType == Enum.UserInputType.MouseButton1 then
+                dragging = true
+                local percent = math.clamp((Mouse.X - track.AbsolutePosition.X) / track.AbsoluteSize.X, 0, 1)
+                local val = min + (max - min) * percent
+                if type(getter()) == "number" and math.floor(getter()) == getter() then val = math.floor(val) end
+                setter(val)
+                fill.Size = UDim2.new(percent, 0, 1, 0)
+                knob.Position = UDim2.new(percent, -5, 0, -3.5)
+                valueLabel.Text = type(val) == "number" and (math.floor(val) == val and tostring(val) or string.format("%.1f", val)) or tostring(val)
+            end
+        end)
+        track.InputEnded:Connect(function() dragging = false end)
+        UserInputService.InputChanged:Connect(function(i)
+            if dragging and i.UserInputType == Enum.UserInputType.MouseMovement then
+                local percent = math.clamp((Mouse.X - track.AbsolutePosition.X) / track.AbsoluteSize.X, 0, 1)
+                local val = min + (max - min) * percent
+                if type(getter()) == "number" and math.floor(getter()) == getter() then val = math.floor(val) end
+                setter(val)
+                fill.Size = UDim2.new(percent, 0, 1, 0)
+                knob.Position = UDim2.new(percent, -5, 0, -3.5)
+                valueLabel.Text = type(val) == "number" and (math.floor(val) == val and tostring(val) or string.format("%.1f", val)) or tostring(val)
+            end
+        end)
+    end
+    
+    local function MakeDropdown(parent, text, options, getter, setter)
+        local frame = Instance.new("Frame")
+        frame.Size = UDim2.new(1, 0, 0, 50)
+        frame.BackgroundTransparency = 1
+        frame.Parent = parent
+        
+        local label = Instance.new("TextLabel")
+        label.Size = UDim2.new(1, 0, 0, 16)
+        label.BackgroundTransparency = 1
+        label.Text = text
+        label.TextColor3 = Color3.fromRGB(106, 122, 148)
+        label.TextSize = 10
+        label.Font = Enum.Font.SourceSans
+        label.Parent = frame
+        
+        local btn = Instance.new("TextButton")
+        btn.Size = UDim2.new(1, 0, 0, 28)
+        btn.Position = UDim2.new(0, 0, 0, 20)
+        btn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+        btn.BorderSizePixel = 1
+        btn.BorderColor3 = Color3.fromRGB(45, 45, 55)
+        btn.Text = getter()
+        btn.TextColor3 = Color3.fromRGB(232, 48, 48)
+        btn.TextSize = 11
+        btn.Font = Enum.Font.SourceSansBold
+        btn.Parent = frame
+        Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 3)
+        
+        local open = false
+        local dropdown = nil
+        btn.MouseButton1Click:Connect(function()
+            if open and dropdown then dropdown:Destroy() end
+            open = true
+            dropdown = Instance.new("Frame")
+            dropdown.Size = UDim2.new(1, 0, 0, 28 * #options)
+            dropdown.Position = UDim2.new(0, 0, 0, 28)
+            dropdown.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+            dropdown.BorderSizePixel = 1
+            dropdown.BorderColor3 = Color3.fromRGB(45, 45, 55)
+            dropdown.Parent = frame
+            Instance.new("UICorner", dropdown).CornerRadius = UDim.new(0, 3)
+            
+            for i, opt in ipairs(options) do
+                local optBtn = Instance.new("TextButton")
+                optBtn.Size = UDim2.new(1, 0, 0, 28)
+                optBtn.Position = UDim2.new(0, 0, 0, 28 * (i-1))
+                optBtn.BackgroundColor3 = Color3.fromRGB(30, 30, 42)
+                optBtn.Text = opt
+                optBtn.TextColor3 = Color3.fromRGB(184, 196, 212)
+                optBtn.TextSize = 11
+                optBtn.Font = Enum.Font.SourceSans
+                optBtn.Parent = dropdown
+                optBtn.MouseButton1Click:Connect(function()
+                    setter(opt)
+                    btn.Text = opt
+                    dropdown:Destroy()
+                    open = false
+                end)
+            end
+        end)
+    end
+    
+    -- ========== LEGIT TAB ==========
     local legitContainer = containers["legit"]
+    local g1, body1, badge1 = CreateGroup(legitContainer, "Aimbot")
+    g1.Size = UDim2.new(1, -20, 0, 180)
+    MakeToggle(body1, "Legit Aimbot", function() return state.legit.aimbot end, function(v) state.legit.aimbot = v end, badge1)
+    MakeToggle(body1, "Silent Aim", function() return state.legit.silent end, function(v) state.legit.silent = v end)
+    MakeToggle(body1, "Auto Shoot", function() return state.legit.autoshoot end, function(v) state.legit.autoshoot = v end)
+    MakeDropdown(body1, "Hitbox", {"Head", "Body"}, function() return state.legit.hitbox end, function(v) state.legit.hitbox = v end)
+    MakeSlider(body1, "FOV", 1, 30, function() return state.legit.fov end, function(v) state.legit.fov = v end)
+    MakeSlider(body1, "Smoothness", 1, 100, function() return state.legit.smooth end, function(v) state.legit.smooth = v end)
     
-    local g1, badge1 = CreateGroup(10, 10, 280, 200, "Aimbot")
-    badge1.Text = state.legit.enabled and "ON" or "OFF"
-    local aimEnable = CreateToggle(15, 35, 60, 22, function() return state.legit.enabled end, function(v) state.legit.enabled = v; badge1.Text = v and "ON" or "OFF" end)
-    local silentAim = CreateToggle(90, 35, 60, 22, function() return state.legit.silent end, function(v) state.legit.silent = v end)
-    local autoShoot = CreateToggle(165, 35, 60, 22, function() return state.legit.autoshoot end, function(v) state.legit.autoshoot = v end)
-    local labels = {Instance.new("TextLabel", g1), Instance.new("TextLabel", g1), Instance.new("TextLabel", g1)}
-    labels[1].Size = UDim2.new(0, 40, 0, 16)
-    labels[1].Position = UDim2.new(0, 20, 0, 38)
-    labels[1].BackgroundTransparency = 1
-    labels[1].Text = "Enable"
-    labels[1].TextColor3 = Color3.fromRGB(184, 196, 212)
-    labels[1].TextSize = 10
-    labels[1].Font = Enum.Font.SourceSans
-    labels[2].Size = UDim2.new(0, 50, 0, 16)
-    labels[2].Position = UDim2.new(0, 95, 0, 38)
-    labels[2].BackgroundTransparency = 1
-    labels[2].Text = "Silent Aim"
-    labels[2].TextColor3 = Color3.fromRGB(106, 122, 148)
-    labels[2].TextSize = 10
-    labels[2].Font = Enum.Font.SourceSans
-    labels[3].Size = UDim2.new(0, 60, 0, 16)
-    labels[3].Position = UDim2.new(0, 170, 0, 38)
-    labels[3].BackgroundTransparency = 1
-    labels[3].Text = "Auto Shoot"
-    labels[3].TextColor3 = Color3.fromRGB(106, 122, 148)
-    labels[3].TextSize = 10
-    labels[3].Font = Enum.Font.SourceSans
+    local g2, body2, badge2 = CreateGroup(legitContainer, "Triggerbot")
+    g2.Size = UDim2.new(1, -20, 0, 120)
+    MakeToggle(body2, "Triggerbot", function() return state.trigger.enabled end, function(v) state.trigger.enabled = v end, badge2)
+    MakeSlider(body2, "Delay (ms)", 10, 200, function() return state.trigger.delaymin end, function(v) state.trigger.delaymin = v end)
     
-    CreateDropdown(15, 70, 120, "Hitbox", {"Head", "Body", "Neck", "Pelvis"}, function() return state.legit.hitbox end, function(v) state.legit.hitbox = v end)
-    CreateSlider(15, 120, 120, "FOV", 1, 30, function() return state.legit.fov end, function(v) state.legit.fov = v end)
-    CreateSlider(150, 120, 120, "Smooth", 1, 100, function() return state.legit.smooth end, function(v) state.legit.smooth = v end)
-    
-    local g2, badge2 = CreateGroup(10, 220, 280, 130, "Triggerbot")
-    badge2.Text = state.trigger.enabled and "ON" or "OFF"
-    CreateToggle(15, 245, 60, 22, function() return state.trigger.enabled end, function(v) state.trigger.enabled = v; badge2.Text = v and "ON" or "OFF" end)
-    CreateToggle(90, 245, 60, 22, function() return state.trigger.scopeonly end, function(v) state.trigger.scopeonly = v end)
-    CreateToggle(165, 245, 60, 22, function() return state.trigger.allies end, function(v) state.trigger.allies = v end)
-    CreateSlider(15, 280, 120, "Delay Min", 0, 200, function() return state.trigger.delaymin end, function(v) state.trigger.delaymin = v end)
-    CreateSlider(150, 280, 120, "Delay Max", 0, 200, function() return state.trigger.delaymax end, function(v) state.trigger.delaymax = v end)
-    
-    local g3, badge3 = CreateGroup(300, 10, 280, 200, "RCS / Accuracy")
-    badge3.Text = state.rcs.enabled and "ON" or "OFF"
-    CreateToggle(305, 35, 60, 22, function() return state.rcs.enabled end, function(v) state.rcs.enabled = v; badge3.Text = v and "ON" or "OFF" end)
-    CreateToggle(380, 35, 60, 22, function() return state.accuracy.nospread end, function(v) state.accuracy.nospread = v end)
-    CreateToggle(455, 35, 60, 22, function() return state.accuracy.norecoil end, function(v) state.accuracy.norecoil = v end)
-    CreateSlider(305, 75, 120, "Pitch", 0, 100, function() return state.rcs.pitch end, function(v) state.rcs.pitch = v end)
-    CreateSlider(440, 75, 120, "Yaw", 0, 100, function() return state.rcs.yaw end, function(v) state.rcs.yaw = v end)
-    CreateToggle(305, 125, 80, 22, function() return state.accuracy.autopistol end, function(v) state.accuracy.autopistol = v end)
-    
-    -- RAGE TAB
-    local rageContainer = containers["rage"]
-    
-    local g4, badge4 = CreateGroup(10, 10, 280, 250, "Ragebot")
-    badge4.Text = state.rage.enabled and "ON" or "OFF"
-    CreateToggle(15, 35, 60, 22, function() return state.rage.enabled end, function(v) state.rage.enabled = v; badge4.Text = v and "ON" or "OFF" end)
-    CreateToggle(90, 35, 60, 22, function() return state.rage.autofire end, function(v) state.rage.autofire = v end)
-    CreateToggle(165, 35, 60, 22, function() return state.rage.doubletap end, function(v) state.rage.doubletap = v end)
-    CreateToggle(225, 35, 60, 22, function() return state.rage.hideshots end, function(v) state.rage.hideshots = v end)
-    CreateDropdown(15, 70, 120, "Hitbox priority", {"Head", "Head + Body", "Body + Head", "Body"}, function() return "Head + Body" end, function(v) end)
-    CreateDropdown(150, 70, 120, "Min damage", {"100 HP", "75 HP", "50 HP", "25 HP"}, function() return "100 HP" end, function(v) end)
-    CreateSlider(15, 125, 250, "Hitchance", 1, 100, function() return state.rage.hitchance end, function(v) state.rage.hitchance = v end)
-    CreateSlider(15, 175, 250, "Multipoint", 1, 10, function() return state.rage.multipoint end, function(v) state.rage.multipoint = v end)
-    
-    local g5, badge5 = CreateGroup(300, 10, 280, 120, "Movement")
-    CreateToggle(305, 35, 80, 22, function() return state.movement.fakeduck end, function(v) state.movement.fakeduck = v end)
-    CreateToggle(390, 35, 80, 22, function() return state.movement.slowwalk end, function(v) state.movement.slowwalk = v end)
-    CreateToggle(475, 35, 80, 22, function() return state.movement.edgejump end, function(v) state.movement.edgejump = v end)
-    CreateKeybind(305, 75, 260, "Doubletap", function() return "SPACE" end, function(v) end)
-    CreateKeybind(305, 110, 260, "Hideshots", function() return "SHIFT" end, function(v) end)
-    CreateKeybind(305, 145, 260, "Slow walk", function() return "CTRL" end, function(v) end)
-    
-    -- VISUAL TAB
+    -- ========== VISUAL TAB ==========
     local visualContainer = containers["visual"]
+    local g3, body3, badge3 = CreateGroup(visualContainer, "ESP")
+    g3.Size = UDim2.new(1, -20, 0, 160)
+    MakeToggle(body3, "ESP Enabled", function() return state.visuals.enabled end, function(v) state.visuals.enabled = v end, badge3)
+    MakeToggle(body3, "Box ESP", function() return state.visuals.box end, function(v) state.visuals.box = v end)
+    MakeToggle(body3, "Name Tags", function() return state.visuals.name end, function(v) state.visuals.name = v end)
+    MakeToggle(body3, "Health Bar", function() return state.visuals.health end, function(v) state.visuals.health = v end)
+    MakeToggle(body3, "Chams", function() return state.visuals.chams end, function(v) state.visuals.chams = v end)
     
-    local g6, badge6 = CreateGroup(10, 10, 280, 280, "ESP Players")
-    badge6.Text = state.visuals.enabled and "ON" or "OFF"
-    CreateToggle(15, 35, 60, 22, function() return state.visuals.enabled end, function(v) state.visuals.enabled = v; badge6.Text = v and "ON" or "OFF" end)
-    CreateToggle(90, 35, 60, 22, function() return state.visuals.box end, function(v) state.visuals.box = v end)
-    CreateToggle(165, 35, 60, 22, function() return state.visuals.skeleton end, function(v) state.visuals.skeleton = v end)
-    CreateToggle(225, 35, 30, 22, function() return state.visuals.name end, function(v) state.visuals.name = v end)
-    CreateToggle(15, 70, 60, 22, function() return state.visuals.health end, function(v) state.visuals.health = v end)
-    CreateToggle(90, 70, 60, 22, function() return state.visuals.armour end, function(v) state.visuals.armour = v end)
-    CreateDropdown(15, 105, 250, "Box style", {"Corner Box", "2D Box", "3D Box", "Glow"}, function() return state.visuals.boxstyle end, function(v) state.visuals.boxstyle = v end)
-    CreateColorPicker(15, 165, 120, "Enemy color", function() return state.visuals.enemycolor end, function(v) state.visuals.enemycolor = v end)
-    CreateColorPicker(150, 165, 120, "Team color", function() return state.visuals.teamcolor end, function(v) state.visuals.teamcolor = v end)
-    
-    local g7, badge7 = CreateGroup(300, 10, 280, 150, "World ESP")
-    CreateToggle(305, 35, 80, 22, function() return state.visuals.weapons end, function(v) state.visuals.weapons = v end)
-    CreateToggle(390, 35, 80, 22, function() return state.visuals.grenades end, function(v) state.visuals.grenades = v end)
-    CreateToggle(475, 35, 80, 22, function() return state.visuals.bomb end, function(v) state.visuals.bomb = v end)
-    CreateToggle(305, 70, 80, 22, function() return state.visuals.footsteps end, function(v) state.visuals.footsteps = v end)
-    
-    local g8, badge8 = CreateGroup(300, 170, 280, 150, "Chams")
-    CreateToggle(305, 195, 60, 22, function() return state.visuals.chams end, function(v) state.visuals.chams = v end)
-    CreateToggle(380, 195, 60, 22, function() return state.visuals.xqz end, function(v) state.visuals.xqz = v end)
-    CreateDropdown(305, 230, 120, "Material", {"Flat", "Glossy", "Plastic", "Metallic"}, function() return state.visuals.chamsmaterial end, function(v) state.visuals.chamsmaterial = v end)
-    CreateColorPicker(440, 230, 120, "Color", function() return state.visuals.chamscolor end, function(v) state.visuals.chamscolor = v end)
-    
-    -- MISC TAB
+    -- ========== MISC TAB ==========
     local miscContainer = containers["misc"]
+    local g4, body4, badge4 = CreateGroup(miscContainer, "Movement")
+    g4.Size = UDim2.new(1, -20, 0, 160)
+    MakeToggle(body4, "Bunny Hop", function() return state.misc.bhop end, function(v) state.misc.bhop = v end, badge4)
+    MakeToggle(body4, "Fly Mode", function() return state.misc.fly end, function(v) state.misc.fly = v end)
+    MakeToggle(body4, "Noclip", function() return state.misc.noclip end, function(v) state.misc.noclip = v end)
+    MakeToggle(body4, "FreeCam (F7)", function() return state.misc.freecam end, function(v) if v then toggleFreeCam() else toggleFreeCam() end end)
     
-    local g9, badge9 = CreateGroup(10, 10, 280, 250, "Movement")
-    CreateToggle(15, 35, 60, 22, function() return state.misc.bhop end, function(v) state.misc.bhop = v end)
-    CreateToggle(90, 35, 60, 22, function() return state.misc.autostrafe end, function(v) state.misc.autostrafe = v end)
-    CreateToggle(165, 35, 60, 22, function() return state.misc.edgejump end, function(v) state.misc.edgejump = v end)
-    CreateToggle(225, 35, 60, 22, function() return state.misc.crouchjump end, function(v) state.misc.crouchjump = v end)
-    CreateDropdown(15, 70, 120, "BH mode", {"Perfect", "Legit", "Rage", "Silent"}, function() return state.misc.bhmode end, function(v) state.misc.bhmode = v end)
-    CreateSlider(150, 70, 120, "Success rate", 1, 100, function() return state.misc.bhrate end, function(v) state.misc.bhrate = v end)
-    
-    local g10, badge10 = CreateGroup(300, 10, 280, 120, "Other")
-    CreateToggle(305, 35, 80, 22, function() return state.misc.noflash end, function(v) state.misc.noflash = v end)
-    CreateToggle(390, 35, 80, 22, function() return state.misc.nosmoke end, function(v) state.misc.nosmoke = v end)
-    CreateToggle(475, 35, 80, 22, function() return state.misc.clantag end, function(v) state.misc.clantag = v end)
-    
-    local g11, badge11 = CreateGroup(10, 270, 280, 100, "FreeCam / Fly")
-    CreateToggle(15, 295, 80, 22, function() return state.misc.freecam end, function(v) if v then toggleFreeCam() else toggleFreeCam() end end)
-    CreateToggle(110, 295, 80, 22, function() return state.misc.fly end, function(v) state.misc.fly = v end)
-    CreateToggle(205, 295, 80, 22, function() return state.misc.noclip end, function(v) state.misc.noclip = v end)
-    
-    local g12, badge12 = CreateGroup(300, 140, 280, 230, "Config")
-    CreateDropdown(305, 165, 250, "Active config", {"HvH_Preset_v3", "Legit_v2", "Rage_v1", "SemiRage"}, function() return state.config.active end, function(v) state.config.active = v end)
-    
-    local loadBtn = Instance.new("TextButton")
-    loadBtn.Size = UDim2.new(0, 80, 0, 28)
-    loadBtn.Position = UDim2.new(0, 315, 0, 210)
-    loadBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
-    loadBtn.BorderSizePixel = 1
-    loadBtn.BorderColor3 = Color3.fromRGB(45, 45, 55)
-    loadBtn.Text = "Load"
-    loadBtn.TextColor3 = Color3.fromRGB(184, 196, 212)
-    loadBtn.TextSize = 11
-    loadBtn.Font = Enum.Font.SourceSansBold
-    loadBtn.Parent = g12
-    Instance.new("UICorner", loadBtn).CornerRadius = UDim.new(0, 3)
-    loadBtn.MouseButton1Click:Connect(LoadConfig)
+    -- ========== CONFIG TAB ==========
+    local configContainer = containers["config"]
+    local g5, body5, badge5 = CreateGroup(configContainer, "Configuration")
+    g5.Size = UDim2.new(1, -20, 0, 120)
     
     local saveBtn = Instance.new("TextButton")
-    saveBtn.Size = UDim2.new(0, 80, 0, 28)
-    saveBtn.Position = UDim2.new(0, 405, 0, 210)
+    saveBtn.Size = UDim2.new(0.45, 0, 0, 35)
+    saveBtn.Position = UDim2.new(0.02, 0, 0, 0)
     saveBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
     saveBtn.BorderSizePixel = 1
     saveBtn.BorderColor3 = Color3.fromRGB(45, 45, 55)
-    saveBtn.Text = "Save"
+    saveBtn.Text = "💾 SAVE CONFIG"
     saveBtn.TextColor3 = Color3.fromRGB(79, 255, 176)
-    saveBtn.TextSize = 11
+    saveBtn.TextSize = 12
     saveBtn.Font = Enum.Font.SourceSansBold
-    saveBtn.Parent = g12
+    saveBtn.Parent = body5
     Instance.new("UICorner", saveBtn).CornerRadius = UDim.new(0, 3)
     saveBtn.MouseButton1Click:Connect(SaveConfig)
     
-    local delBtn = Instance.new("TextButton")
-    delBtn.Size = UDim2.new(0, 80, 0, 28)
-    delBtn.Position = UDim2.new(0, 495, 0, 210)
-    delBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
-    delBtn.BorderSizePixel = 1
-    delBtn.BorderColor3 = Color3.fromRGB(45, 45, 55)
-    delBtn.Text = "Del"
-    delBtn.TextColor3 = Color3.fromRGB(232, 48, 48)
-    delBtn.TextSize = 11
-    delBtn.Font = Enum.Font.SourceSansBold
-    delBtn.Parent = g12
-    Instance.new("UICorner", delBtn).CornerRadius = UDim.new(0, 3)
+    local loadBtn = Instance.new("TextButton")
+    loadBtn.Size = UDim2.new(0.45, 0, 0, 35)
+    loadBtn.Position = UDim2.new(0.53, 0, 0, 0)
+    loadBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+    loadBtn.BorderSizePixel = 1
+    loadBtn.BorderColor3 = Color3.fromRGB(45, 45, 55)
+    loadBtn.Text = "📂 LOAD CONFIG"
+    loadBtn.TextColor3 = Color3.fromRGB(232, 48, 48)
+    loadBtn.TextSize = 12
+    loadBtn.Font = Enum.Font.SourceSansBold
+    loadBtn.Parent = body5
+    Instance.new("UICorner", loadBtn).CornerRadius = UDim.new(0, 3)
+    loadBtn.MouseButton1Click:Connect(LoadConfig)
     
-    CreateToggle(305, 255, 100, 22, function() return state.config.autosave end, function(v) state.config.autosave = v end)
-    CreateToggle(420, 255, 100, 22, function() return state.config.cloud end, function(v) state.config.cloud = v end)
+    local unloadBtn = Instance.new("TextButton")
+    unloadBtn.Size = UDim2.new(0.96, 0, 0, 35)
+    unloadBtn.Position = UDim2.new(0.02, 0, 0, 50)
+    unloadBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+    unloadBtn.BorderSizePixel = 1
+    unloadBtn.BorderColor3 = Color3.fromRGB(232, 48, 48)
+    unloadBtn.Text = "⚠️ UNLOAD CHEAT (END) ⚠️"
+    unloadBtn.TextColor3 = Color3.fromRGB(232, 48, 48)
+    unloadBtn.TextSize = 12
+    unloadBtn.Font = Enum.Font.SourceSansBold
+    unloadBtn.Parent = body5
+    Instance.new("UICorner", unloadBtn).CornerRadius = UDim.new(0, 3)
+    unloadBtn.MouseButton1Click:Connect(UnloadCheat)
     
-    -- SKINS TAB
-    local skinsContainer = containers["skins"]
-    
-    local g13, badge13 = CreateGroup(10, 10, 280, 230, "Skin Changer")
-    CreateDropdown(15, 45, 250, "Knife model", {"Butterfly Knife", "Karambit", "M9 Bayonet", "Huntsman", "Flip Knife"}, function() return state.skin.knifemodel end, function(v) state.skin.knifemodel = v end)
-    CreateDropdown(15, 100, 250, "Knife skin", {"Fade FN", "Doppler FN", "Marble Fade", "Tiger Tooth", "Crimson Web"}, function() return state.skin.kniveskin end, function(v) state.skin.kniveskin = v end)
-    CreateDropdown(15, 155, 250, "Gloves", {"Sport Gloves", "Driver Gloves", "Hand Wraps", "Moto Gloves", "Specialist"}, function() return state.skin.gloves end, function(v) state.skin.gloves = v end)
-    CreateToggle(15, 210, 100, 22, function() return state.skin.applyall end, function(v) state.skin.applyall = v end)
-    
-    local g14, badge14 = CreateGroup(300, 10, 280, 100, "Weapons")
-    -- Weapon slots placeholder
-    
-    local unloadBig = Instance.new("TextButton")
-    unloadBig.Size = UDim2.new(0, 540, 0, 32)
-    unloadBig.Position = UDim2.new(10, 0, 1, -42)
-    unloadBig.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
-    unloadBig.BorderSizePixel = 1
-    unloadBig.BorderColor3 = Color3.fromRGB(232, 48, 48)
-    unloadBig.Text = "⚠️ UNLOAD CHEAT (END) ⚠️"
-    unloadBig.TextColor3 = Color3.fromRGB(232, 48, 48)
-    unloadBig.TextSize = 12
-    unloadBig.Font = Enum.Font.SourceSansBold
-    unloadBig.Parent = MainFrame
-    Instance.new("UICorner", unloadBig).CornerRadius = UDim.new(0, 4)
-    unloadBig.MouseButton1Click:Connect(UnloadCheat)
+    local infoLabel = Instance.new("TextLabel")
+    infoLabel.Size = UDim2.new(1, 0, 0, 30)
+    infoLabel.Position = UDim2.new(0, 0, 0, 95)
+    infoLabel.BackgroundTransparency = 1
+    infoLabel.Text = "Telegram: t.me/squadrim1 | Insert = Menu | F7 = FreeCam | End = Unload"
+    infoLabel.TextColor3 = Color3.fromRGB(106, 122, 148)
+    infoLabel.TextSize = 10
+    infoLabel.Font = Enum.Font.SourceSans
+    infoLabel.Parent = body5
 end
 
 -- ========== АВТОРИЗАЦИЯ ==========
@@ -1208,22 +978,21 @@ local function ShowAuth()
             table.insert(connections, RunService.RenderStepped:Connect(function()
                 UpdateESP()
                 UpdateHUD()
-                FOVCircle.Visible = state.legit.enabled and (state.legit.silent or state.legit.autoshoot) and not isFreeCam
+                FOVCircle.Visible = (state.legit.aimbot or state.legit.silent) and not isFreeCam
                 FOVCircle.Position = Vector2.new(Mouse.X, Mouse.Y + 36)
                 FOVCircle.Radius = state.legit.fov * 10
             end))
             
             UserInputService.InputBegan:Connect(function(input)
                 if input.KeyCode == Enum.KeyCode.Insert then
-                    state.menu = not state.menu
-                    if MainFrame then MainFrame.Visible = state.menu end
+                    if MainFrame then MainFrame.Visible = not MainFrame.Visible end
                 elseif input.KeyCode == Enum.KeyCode.End then
                     UnloadCheat()
                 end
             end)
             
-            print("=== SQUADRIM DLC PRO v15.0 | ImGUI Style | ЗАПУЩЕН ===")
-            print("Insert = Открыть меню | F7 = FreeCam | End = Выгрузка")
+            print("=== SQUADRIM DLC PRO v15.1 | ImGUI Style | ЗАПУЩЕН ===")
+            print("Insert = Меню | F7 = FreeCam | End = Выгрузка")
         else
             textBox.Text = ""
             textBox.PlaceholderText = "НЕВЕРНЫЙ КЛЮЧ!"
